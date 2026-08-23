@@ -10,7 +10,8 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1, staleTime: 30_000 } },
 });
 
-export function Providers({ children }: { children: any }) {
+export function Providers(props: { children: React.ReactNode }) {
+  const { children } = props;
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>

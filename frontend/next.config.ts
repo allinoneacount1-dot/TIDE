@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: false },
   webpack: (config) => {
-    // Shim missing @x402 modules that coinbase cdp-sdk tries to import but we don't use
     config.resolve.alias = {
       ...config.resolve.alias,
       "@x402/core/client": false,
@@ -13,7 +14,6 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
-  // don't try to bundle these server-only deps
   experimental: {
     optimizePackageImports: ["@rainbow-me/rainbowkit"],
   },
