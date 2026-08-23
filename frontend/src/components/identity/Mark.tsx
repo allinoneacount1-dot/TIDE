@@ -1,0 +1,38 @@
+"use client";
+
+/**
+ * The compact TIDE mark: the reversed E with its accent bar and degree dot.
+ *
+ * This fragment is used wherever the full wordmark would be illegible — the
+ * favicon, a wallet connector list, a 20px header on mobile. It is a crop of the
+ * same traced geometry, not a redraw, so the two never drift apart.
+ */
+export function Mark({
+  className = "h-6 w-auto",
+  signal = true,
+  title = "TIDE",
+}: {
+  className?: string;
+  /** Render the accent bar and degree mark in the brand signal colour. */
+  signal?: boolean;
+  /** Accessible name. Pass null when the mark sits beside visible text. */
+  title?: string | null;
+}) {
+  return (
+    <svg
+      viewBox="2060 0 988 678"
+      className={className}
+      role={title ? "img" : "presentation"}
+      aria-label={title ?? undefined}
+      aria-hidden={title ? undefined : true}
+    >
+      {title ? <title>{title}</title> : null}
+      <g fill="currentColor">
+        <path d="M0,0 L505,0 L506,5 L498,13 L496,18 L492,22 L490,27 L483,34 L481,39 L477,43 L475,48 L468,55 L466,60 L462,64 L460,69 L453,76 L451,81 L447,85 L445,90 L438,97 L436,102 L432,106 L430,111 L423,118 L421,123 L403,141 L398,143 L397,144 L387,145 L385,147 L6,148 L4,150 L-9,151 L-11,153 L-18,154 L-20,156 L-27,157 L-29,159 L-34,161 L-40,164 L-46,167 L-50,171 L-55,173 L-81,199 L-83,204 L-87,208 L-89,213 L-92,219 L-95,225 L-98,231 L-99,232 L-100,239 L-101,240 L-255,240 L-256,239 L-256,226 L-254,224 L-253,211 L-251,209 L-250,202 L-248,200 L-247,193 L-245,191 L-244,184 L-242,182 L-240,177 L-239,176 L-238,169 L-236,167 L-234,162 L-231,156 L-228,150 L-225,144 L-222,138 L-219,132 L-215,128 L-213,123 L-209,119 L-207,114 L-200,107 L-198,102 L-185,89 L-183,84 L-174,75 L-169,73 L-153,57 L-148,55 L-141,48 L-136,46 L-132,42 L-127,40 L-121,37 L-115,34 L-111,30 L-106,28 L-100,25 L-99,24 L-92,23 L-90,21 L-85,19 L-84,18 L-77,17 L-75,15 L-68,14 L-66,12 L-59,11 L-57,9 L-47,8 L-45,6 L-29,5 L-27,3 L-2,2 Z " transform="translate(2359,21)"/>\n        <path d="M0,0 L158,0 L159,1 L160,8 L162,10 L163,17 L165,19 L167,24 L170,30 L174,34 L176,39 L180,43 L182,48 L202,68 L207,70 L211,74 L216,76 L222,79 L228,82 L234,85 L235,86 L242,87 L244,89 L257,90 L259,92 L644,93 L646,95 L653,96 L655,98 L660,100 L666,103 L681,118 L683,123 L687,127 L689,132 L696,139 L698,144 L702,148 L704,153 L711,160 L713,165 L717,169 L719,174 L726,181 L728,186 L732,190 L734,195 L741,202 L743,207 L750,214 L752,219 L759,226 L761,231 L765,235 L764,240 L256,240 L254,238 L229,237 L227,235 L214,234 L212,232 L199,231 L197,229 L190,228 L188,226 L181,225 L179,223 L174,221 L173,220 L166,219 L164,217 L159,215 L153,212 L147,209 L141,206 L135,203 L131,199 L126,197 L122,193 L117,191 L113,187 L108,185 L89,166 L84,164 L75,155 L73,150 L60,137 L58,132 L51,125 L49,120 L45,116 L43,111 L39,107 L37,102 L34,96 L31,90 L28,84 L25,78 L22,72 L19,66 L18,65 L17,58 L15,56 L13,51 L12,50 L11,40 L9,38 L8,31 L6,29 L5,19 L3,17 L2,4 L0,3 Z " transform="translate(2100,426)"/>
+      </g>
+      <g fill={signal ? "var(--color-signal)" : "currentColor"}>
+        <path d="M0,0 L7,0 L9,2 L22,3 L24,5 L29,7 L35,10 L47,22 L49,27 L52,33 L53,34 L54,44 L56,46 L56,62 L54,64 L53,74 L51,76 L49,81 L45,85 L43,90 L37,96 L32,98 L28,102 L23,104 L22,105 L12,106 L10,108 L-3,108 L-5,106 L-15,105 L-17,103 L-22,101 L-28,98 L-43,83 L-45,78 L-46,77 L-47,70 L-49,68 L-49,40 L-47,38 L-46,31 L-44,29 L-42,24 L-27,9 L-22,7 L-16,4 L-15,3 L-2,2 Z M-6,27 L-8,29 L-13,31 L-22,40 L-24,45 L-25,46 L-25,62 L-23,64 L-21,69 L-12,78 L-7,80 L-6,81 L13,81 L15,79 L20,77 L26,71 L28,66 L29,65 L29,43 L27,41 L25,36 L19,30 L14,28 L13,27 Z " transform="translate(2980,12)"/>\n        <path d="M0,0 L386,0 L386,3 L378,10 L376,15 L357,34 L355,39 L330,64 L328,69 L309,88 L307,93 L298,102 L293,104 L287,107 L281,110 L280,111 L-3,111 L-5,109 L-12,108 L-14,106 L-19,104 L-25,101 L-40,86 L-42,81 L-43,80 L-44,73 L-46,71 L-46,43 L-44,41 L-43,34 L-41,32 L-39,27 L-36,21 L-27,12 L-22,10 L-18,6 L-11,5 L-9,3 L-2,2 Z " transform="translate(2341,288)"/>
+      </g>
+    </svg>
+  );
+}
