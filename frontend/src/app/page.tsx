@@ -145,7 +145,7 @@ export default function Home() {
               <div className="mt-4 space-y-4">
                 <div>
                   <label className="mono text-xs text-[#8A8F8A]">Target asset</label>
-                  <select value={target} onChange={e => setTarget(e.target.value)} className="mt-1 w-full bg-[#1A1D1A] border rounded px-3 py-2 text-sm">
+                  <select value={target} onChange={e => setTarget(e.target.value as `0x${string}`)} className="mt-1 w-full bg-[#1A1D1A] border rounded px-3 py-2 text-sm">
                     {TOKENS.map(t => <option key={t.symbol} value={t.address}>{t.symbol} — {t.name}</option>)}
                   </select>
                 </div>
