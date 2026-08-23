@@ -1,86 +1,342 @@
 @import "tailwindcss";
 
-/* TIDE Machine Editorial — Linear.app DNA + Robinhood Acid Signal
-   Surface: MONITOR (density, glanceability)
-   Fonts: Inter Variable cv01/ss03 + JetBrains Mono
-*/
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap');
+/* ══════════════════════════════════════════════════════════════════════════
+   TIDE — design tokens
 
-:root {
-  /* Linear-inspired dark luminance stack — darkness as whitespace */
-  --bg: #08090a;              /* marketing black */
-  --bg-panel: #0f1011;         /* panel */
-  --surface-1: #121412;        /* level 3 — card */
-  --surface-2: #191a1b;        /* elevated */
-  --surface-3: #23252a;        /* hover */
-  --line-subtle: rgba(255,255,255,0.05);
-  --line: rgba(255,255,255,0.08);
-  --line-strong: rgba(255,255,255,0.12);
-  --text-primary: #f7f8f8;     /* not pure white */
-  --text-secondary: #d0d6e0;
-  --text-tertiary: #8a8f98;
-  --text-quaternary: #62666d;
-  --accent: #CCFF00;           /* Robinhood acid — ONLY signal */
-  --accent-hover: #d4ff33;
-  --accent-muted: rgba(204,255,0,0.08);
-  --danger: #ff3b30;
-  --warn: #ffcc00;
-  --success: #10b981;
+   The palette is derived from the wordmark, not chosen alongside it:
+   ground #080808, signal #D4FD0B and mark #F6F6F6 are sampled from the logo.
+
+   Neutrals are warm-shifted. The signal is a yellow-green; the cool blue-grey
+   greys of a typical dark product UI vibrate against it. Warm neutrals sit
+   underneath it quietly, which is what a signal colour needs.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── ground & surfaces ────────────────────────────────────────────────── */
+  --color-void: #040404;
+  --color-ground: #080808;
+  --color-surface: #0b0b0c;
+  --color-raised: #101012;
+  --color-hover: #17171a;
+  --color-active: #1e1e22;
+
+  /* ── rules ────────────────────────────────────────────────────────────── */
+  --color-hairline: rgba(246, 246, 246, 0.055);
+  --color-rule: rgba(246, 246, 246, 0.1);
+  --color-rule-strong: rgba(246, 246, 246, 0.18);
+
+  /* ── type ─────────────────────────────────────────────────────────────── */
+  --color-hi: #f6f6f6;
+  --color-mid: #a9aaa6;
+  --color-low: #6f706c;
+  --color-dim: #4b4c49;
+
+  /* ── signal ───────────────────────────────────────────────────────────── */
+  --color-signal: #d4fd0b;
+  --color-signal-ink: #0a0d00;
+  --color-signal-wash: rgba(212, 253, 11, 0.1);
+  --color-signal-edge: rgba(212, 253, 11, 0.32);
+
+  /* Three state hues, deliberately. A fourth starts competing with the signal
+     and the reader stops being able to tell what is urgent. */
+  --color-warn: #ffb020;
+  --color-warn-wash: rgba(255, 176, 32, 0.1);
+  --color-warn-edge: rgba(255, 176, 32, 0.3);
+  --color-fail: #ff4d3d;
+  --color-fail-wash: rgba(255, 77, 61, 0.1);
+  --color-fail-edge: rgba(255, 77, 61, 0.32);
+
+  /* ── type families (bound by next/font) ───────────────────────────────── */
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-jb), ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* ── motion ───────────────────────────────────────────────────────────── */
+  --ease-out-tide: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-tide: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 140ms;
+  --dur-fast: 240ms;
+  --dur-base: 420ms;
+  --dur-slow: 720ms;
 }
 
-* { border-color: var(--line); }
-html { font-feature-settings: "cv01", "ss03"; }
+/* ══════════════════════════════════════════════════════════════════════════
+   base
+   ══════════════════════════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-color: var(--color-rule);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+
 body {
-  background: var(--bg);
-  color: var(--text-primary);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-feature-settings: "cv01", "ss03";
+  margin: 0;
+  background: var(--color-ground);
+  color: var(--color-hi);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  letter-spacing: -0.011em;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums;
+  overflow-x: hidden;
 }
-body::before {
+
+::selection {
+  background: var(--color-signal);
+  color: var(--color-signal-ink);
+}
+
+/* Focus is a design element here, not an afterthought: the ring uses the signal
+   colour so keyboard position reads at a glance on a dark ground. */
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-void);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-active);
+  border: 3px solid var(--color-void);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-rule-strong);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   the chamfer
+
+   The wordmark's letterforms are cut at 45°. That single move is the whole
+   shape language: one corner clipped, never four. Four reads as sci-fi
+   costume; one reads as a machined part.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.chamfer {
+  --chamfer: 10px;
+  clip-path: polygon(0 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer), 100% 100%, 0 100%);
+}
+.chamfer-sm {
+  --chamfer: 6px;
+  clip-path: polygon(0 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer), 100% 100%, 0 100%);
+}
+.chamfer-bl {
+  --chamfer: 10px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, var(--chamfer) 100%, 0 calc(100% - var(--chamfer)));
+}
+
+/* A chamfered element cannot carry a CSS border — the clip cuts it off. This
+   draws the outline as a background gradient pair that follows the same
+   polygon, so the edge survives the clip. */
+.chamfer-edge {
+  position: relative;
+}
+.chamfer-edge::after {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.015;
-  z-index: 9999;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background: var(--color-rule);
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--chamfer, 10px)) 0,
+    100% var(--chamfer, 10px),
+    100% 100%,
+    0 100%,
+    0 1px,
+    1px 1px,
+    1px calc(100% - 1px),
+    calc(100% - 1px) calc(100% - 1px),
+    calc(100% - 1px) calc(var(--chamfer, 10px) + 0.5px),
+    calc(100% - var(--chamfer, 10px) - 0.5px) 1px,
+    0 1px
+  );
 }
-.mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-feature-settings: normal; }
-.display { font-family: 'Instrument Serif', serif; letter-spacing: -0.02em; }
-.grid-swiss { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
-@media (min-width: 1024px) { .grid-swiss { gap: 24px; } }
-.card {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  backdrop-filter: blur(12px);
+
+/* ══════════════════════════════════════════════════════════════════════════
+   typography
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.t-display {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-stretch: 112%;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  text-wrap: balance;
 }
-.card-hover:hover { background: rgba(255,255,255,0.04); border-color: var(--line-strong); }
-.pill { border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 510; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid var(--line); }
-.accent-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--accent); display: inline-block; box-shadow: 0 0 8px rgba(204,255,0,0.5); }
-.tide-3d {
-  color: #f7f8f8;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-feature-settings: "cv01","ss03";
-  text-shadow:
-    0 1px 0 #a8cc00,
-    0 2px 0 #8fb500,
-    0 3px 0 #7a9e00,
-    0 4px 0 #658700,
-    0 5px 10px rgba(0,0,0,0.45),
-    0 6px 12px rgba(0,0,0,0.35),
-    0 12px 24px rgba(204,255,0,0.12);
-  transform: perspective(600px) translateZ(0);
-  letter-spacing: -0.04em;
-  -webkit-font-smoothing: antialiased;
+
+.t-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-low);
 }
-.focus-ring:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 4px rgba(204,255,0,0.2); }
-.skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 37%, rgba(255,255,255,0.04) 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
-@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
-/* Linear-style scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-panel); }
-::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 999px; }
+
+.t-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.t-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   the tide line
+
+   TIDE's signature mark: a hairline that carries a travelling highlight. It
+   appears wherever the product wants to say "this is a live channel" — under
+   the active nav item, along the execution spine, across section seams.
+   The animation is paused unless an ancestor marks it live, so a page full of
+   rules is not a page full of animation.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.tide-line {
+  position: relative;
+  height: 1px;
+  background: var(--color-rule);
+  overflow: hidden;
+}
+
+.tide-line[data-live="true"]::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  width: 33%;
+  background: linear-gradient(90deg, transparent, var(--color-signal), transparent);
+  animation: tide-travel 3.6s var(--ease-in-out-tide) infinite;
+  will-change: transform;
+}
+
+@keyframes tide-travel {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   grid
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.shell {
+  width: 100%;
+  max-width: 1560px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+@media (min-width: 768px) {
+  .shell {
+    padding-inline: 32px;
+  }
+}
+@media (min-width: 1280px) {
+  .shell {
+    padding-inline: 48px;
+  }
+}
+
+/* The app header is sticky at 56px. Without this, any programmatic scroll —
+   an anchor, a focus, a test scrolling a control into view — lands the target
+   underneath it. */
+section[aria-label] {
+  scroll-margin-top: 72px;
+}
+
+.rule-t {
+  border-top: 1px solid var(--color-hairline);
+}
+.rule-b {
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   loading
+
+   One shimmer definition, used everywhere, so skeletons never drift apart.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-raised);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(246, 246, 246, 0.045), transparent);
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
+}
+@keyframes skeleton-sweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   reduced motion
+
+   Not a blanket kill. Position and opacity settle instantly; state changes
+   that carry meaning — a status turning live, a number changing — keep a
+   short cross-fade so the user still sees that something happened.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .tide-line[data-live="true"]::after {
+    animation: none;
+    transform: none;
+    width: 100%;
+    opacity: 0.5;
+  }
+  .skeleton::after {
+    animation: none;
+    opacity: 0.4;
+    transform: none;
+  }
+}
+
+/* GSAP sets inline styles before hydration paint; this stops a flash of the
+   final layout on elements the motion system will take over. */
+[data-tide-reveal] {
+  visibility: hidden;
+}
+.tide-motion-ready [data-tide-reveal] {
+  visibility: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-tide-reveal] {
+    visibility: visible;
+  }
+}

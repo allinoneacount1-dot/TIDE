@@ -1,3 +1,10 @@
 allowBuilds:
+  bufferutil: set this to true or false
+  keccak: set this to true or false
+  secp256k1: set this to true or false
   sharp: false
   unrs-resolver: false
+  utf-8-validate: set this to true or false
+minimumReleaseAgeExclude:
+  - '@tanstack/query-core@5.102.2'
+  - '@tanstack/react-query@5.102.2'
