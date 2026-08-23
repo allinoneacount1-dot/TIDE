@@ -1,66 +1,113 @@
-# TIDE Documentation
+# Architecture
 
-## Architecture
-
-See README.md for diagram. Full wiring in `docs/wiring.md`.
-
-## Data Sources
-
-| Info | Primary | Fallback | Cache |
-|------|---------|----------|-------|
-| USDC balance | RPC eth_call | Indexer | 15s |
-| Vault shares | contract convertToAssets | — | 30s |
-| Executions | Indexer Executed events | getLogs | DB 60s |
-| Price | Pyth Hermes (free) | Chainlink | Redis 30s |
-| Quote | 0x API (free) | RPC quote | 15s |
-
-All data-driven components have: loading / empty / populated / stale / unavailable / error / rate-limited.
-
-## Contracts
-
-- `TideVault.sol`: ERC4626, pausable, reentrancy guarded, onlyKeeperOrOwner execute, slippage minOut, fee 15bps
-- `VaultFactory.sol`: clone deploy, treasury, userVaults mapping
-
-Events: VaultCreated, Deposited, Executed(amountIn, amountOut, price, timestamp, executionId), Withdrawn
-
-Security: OZ 5.3, no upgradeability (MVP immutable), allowlist aggregator, Tenderly simulation pre-broadcast.
-
-## Deployment
-
-### Local
-
-```bash
-anvil # fork
-forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974...
+```
+                    ┌───────────────────────────────────────────┐
+   browser          │  Next.js 15 · App Router                  │
+                    │                                           │
+                    │  /            marketing, no wallet code   │
+                    │  /docs        reference, no wallet code   │
+                    │  /app         terminal — wagmi + viem     │
+                    └───────────────┬───────────────────────────┘
+                                    │
+              ┌─────────────────────┼──────────────────────┐
+              │                     │                      │
+     reads / writes          route handlers          indexed history
+              │                     │                      │
+              ▼                     ▼                      ▼
+      ┌───────────────┐   ┌──────────────────┐   ┌──────────────────┐
+      │  JSON-RPC     │   │ /api/quote  (0x) │   │ /api/executions  │
+      │  Robinhood    │   │ /api/price       │   │ → Blockscout     │
+      │  Chain        │   │   (Chainlink)    │   │   (RPC fallback) │
+      └───────┬───────┘   └──────────────────┘   └──────────────────┘
+              │
+              ▼
+      ┌──────────────────────────────────────────────────────┐
+      │  TideRegistry            (one per chain)             │
+      │    · router allowlist  · price feeds  · fee          │
+      │    · treasury  · keeper  · halt  · vault enumeration │
+      └───────────────┬──────────────────────────────────────┘
+                      │ clones (EIP-1167)
+                      ▼
+      ┌──────────────────────────────────────────────────────┐
+      │  TideVault               (one per user, per quote)   │
+      │    · idle quote capital  · acquired assets           │
+      │    · Plan[]  · execute() · withdraw() · exitAll()    │
+      └───────────────▲──────────────────────────────────────┘
+                      │ execute(planId, minOut, router, spender, data)
+                      │
+      ┌───────────────┴──────────┐
+      │  keeper/  (self-hosted)  │  GitHub Actions · VPS · local
+      └──────────────────────────┘
 ```
 
-### Testnet (Robinhood / Arbitrum Sepolia)
+## Why it is shaped this way
 
-```bash
-forge script script/Deploy.s.sol --rpc-url $ROBINHOOD_L2_RPC --broadcast --verify
-```
+**One vault per user, not a shared pool.** Isolation is the product: a bug or a
+hostile route in one vault cannot touch another, and there is no shared share
+price to manipulate. EIP-1167 clones make the per-user cost a fraction of a full
+deployment.
 
-Set `.env` with addresses.
+**Configuration in the registry, capital in the vault.** The registry holds the
+things that must be changeable in an incident — which routers may be called,
+which feed guards which asset, whether executions are halted. It holds no
+capital and has no path to any. A fully compromised registry owner can stop
+executions and redirect the fee, both bounded; they cannot reach principal.
 
-## Indexer
+**The keeper is a triggering device, not an operator.** Its only authority is
+`execute` on vaults that have named it, inside guards the vault recomputes. This
+is what makes a self-hosted keeper acceptable on a chain that has no managed
+automation.
 
-Option A (free self-host): Ponder + Supabase
-Option B (managed free): Envio — config in `indexer/envio.config.ts`
-Option C (MVP no-indexer): `getLogs` polling via `src/lib/indexerFallback.ts` + Vercel Cron every 60s
+**Route handlers exist for secrets and for shape, not for convenience.**
+`/api/quote` holds the 0x key server-side and works around 0x's CORS behaviour.
+`/api/executions` proxies Blockscout so the browser is not depending on the
+explorer's CORS policy, and so repeated views cost the explorer one request.
+`/api/price` reads the same Chainlink aggregator the on-chain guard consults.
 
-## Free-tier matrix
+## Data flow for one execution
 
-See README; total MVP $0-5/mo.
+1. The keeper (or the owner, in the UI) reads `canExecute(planId)`. It returns a
+   readiness code and the oracle reference price.
+2. If ready, a route is fetched — 0x on mainnet, the deployed simulated router
+   on a simulated chain.
+3. `requiredOutFor(planId)` is read. If the route is below it, the execution is
+   skipped rather than broadcast: a revert costs gas for nothing.
+4. `execute(planId, minOut, router, spender, swapData)` is simulated, then sent.
+5. The vault charges the fee, approves the exact remaining amount, calls the
+   router, revokes the approval, measures the balance delta, checks it against
+   the floor, advances the cadence and emits `Executed`.
+6. The frontend re-reads vault state and refetches history. The `Executed` event
+   is what populates the ledger and the cost-basis chart.
 
-## Testing
+## Frontend structure
 
-- `forge test -vv` (contracts)
-- `pnpm test` (frontend vitest)
-- `pnpm exec playwright test` (E2E: Connect→Create→Deposit→Execute→Withdraw)
+| Path | Responsibility |
+|---|---|
+| `src/lib/chains.ts` | The only place a chain ID or RPC is defined |
+| `src/lib/abi.generated.ts` | Generated from Foundry artifacts by `pnpm sync:contracts` |
+| `src/lib/deployments.generated.ts` | Generated from `contracts/deployments/*.json` |
+| `src/lib/format.ts` | All money formatting. bigint in, string out, no floats |
+| `src/lib/lifecycle.ts` | Transaction phases and revert decoding |
+| `src/lib/readiness.ts` | Mirrors `TideVault.Readiness` with copy per code |
+| `src/lib/indexer.ts` | Execution history, with source and coverage reported |
+| `src/hooks/useTide.ts` | Contract reads, batched and polled by volatility |
+| `src/hooks/useTideTx.ts` | Simulate → sign → submit → receipt |
+| `src/components/motion/` | GSAP scenes, scoped and reverted per component |
+| `src/components/tide/` | The signature objects: the tide line, the cycle |
 
-## Security notes
+ABIs and deployment records are **generated, never hand-written**. `pnpm predev`
+and `pnpm prebuild` regenerate them, so a contract change that breaks a call site
+is a build error rather than a runtime revert in front of a user.
 
-- Never expose PRIVATE_KEY or API secrets with NEXT_PUBLIC prefix
-- `grep -r NEXT_PUBLIC.*API_KEY frontend/src` must be empty
-- Keeper is allowlisted; owner can rotate
-- Pausable for emergency
+## Chain characteristics that shaped decisions
+
+Robinhood Chain is Arbitrum Nitro. Three properties changed the design:
+
+- **~100ms blocks.** A month is roughly 26 million blocks, so `eth_getLogs` over
+  any meaningful range is not viable. History comes from Blockscout, and the RPC
+  fallback is bounded and labelled as partial.
+- **`block.number` is an estimated L1 block number.** Nothing user-facing derives
+  a time or a position from it; scheduling uses `block.timestamp` and the UI uses
+  the RPC's L2 head.
+- **Two-part gas (L2 execution + L1 calldata).** Swap calldata is the dominant
+  cost of an execution, which is a reason to keep one execution to one plan.

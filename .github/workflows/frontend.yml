@@ -1,0 +1,128 @@
+name: frontend
+
+on:
+  push:
+    paths: ["frontend/**", "contracts/src/**", ".github/workflows/frontend.yml"]
+  pull_request:
+    paths: ["frontend/**", "contracts/src/**", ".github/workflows/frontend.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - uses: foundry-rs/foundry-toolchain@v1
+
+      # ABIs are generated from the Foundry artifacts, so the contracts have to
+      # be built before the frontend can typecheck. A contract change that breaks
+      # a call site fails here rather than reverting in front of a user.
+      - name: Build contracts
+        run: forge build
+        working-directory: contracts
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 11 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+        working-directory: frontend
+
+      - run: pnpm sync:contracts
+        working-directory: frontend
+
+      - run: pnpm typecheck
+        working-directory: frontend
+
+      - run: pnpm exec eslint src tests
+        working-directory: frontend
+
+      - run: pnpm test
+        working-directory: frontend
+
+      - run: pnpm build
+        working-directory: frontend
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - uses: foundry-rs/foundry-toolchain@v1
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 11 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      # A real chain with the real contracts. Nothing in the suite is mocked
+      # except the wallet chooser.
+      - name: Start devnet
+        run: |
+          anvil --chain-id 46630 --block-time 1 --silent &
+          sleep 5
+          cast chain-id --rpc-url http://127.0.0.1:8545
+
+      - name: Deploy simulated market
+        working-directory: contracts
+        run: |
+          forge script script/DeploySimulated.s.sol:DeploySimulated \
+            --rpc-url http://127.0.0.1:8545 --broadcast \
+            --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+      - name: Fund the test account
+        working-directory: contracts
+        run: |
+          USDG=$(jq -r .quote deployments/46630.json)
+          cast send "$USDG" "mint(address,uint256)" \
+            0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC 100000000000 \
+            --rpc-url http://127.0.0.1:8545 \
+            --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+      - name: Install
+        working-directory: frontend
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install --with-deps chromium
+
+      - name: Serve
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_DEFAULT_CHAIN_ID: "46630"
+          NEXT_PUBLIC_ROBINHOOD_TESTNET_RPC_URL: http://127.0.0.1:8545
+          NEXT_PUBLIC_E2E: "1"
+          NEXT_PUBLIC_E2E_ACCOUNT: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+        run: |
+          pnpm build
+          pnpm start &
+          npx wait-on http://127.0.0.1:3000 -t 60000
+
+      - name: End to end
+        working-directory: frontend
+        run: pnpm exec playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+          retention-days: 7

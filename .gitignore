@@ -1,12 +1,39 @@
 node_modules
-.out
-cache
-broadcast
 .pnpm-store
-.env
-.env.local
-frontend/.env.local
-frontend/node_modules
+.DS_Store
+
+# contracts
+contracts/out
+contracts/cache
+contracts/broadcast
+contracts/.env
+
+# Deployment records and generated ABIs are build artifacts: `forge script`
+# writes the first, `pnpm sync:contracts` derives the second from the Foundry
+# output. Committing devnet addresses would ship anvil's deterministic
+# addresses as if they were a real deployment.
+#
+# If you deploy the frontend from a separate repository, commit
+# frontend/src/lib/*.generated.ts there — see docs/deployment.md.
+contracts/deployments/*.json
+frontend/src/lib/abi.generated.ts
+frontend/src/lib/deployments.generated.ts
+
+# frontend
 frontend/.next
 frontend/out
-.DS_Store
+frontend/.env
+frontend/.env.local
+frontend/test-results
+frontend/playwright-report
+frontend/tsconfig.tsbuildinfo
+frontend/next-env.d.ts
+
+# keeper
+keeper/.env
+keeper/.env.local
+
+# secrets, anywhere
+.env
+*.pem
+*.key
