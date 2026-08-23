@@ -1,10 +1,34 @@
+# ── native build scripts ─────────────────────────────────────────────────────
+#
+# pnpm will not run a dependency's install script unless the workspace decides
+# one way or the other, and when *running a script* it treats an undecided one
+# as a hard error rather than a warning. pnpm writes these keys with the literal
+# placeholder "set this to true or false", which is not a boolean — so a clean
+# checkout fails at `pnpm run build` even though `pnpm install` succeeds. That
+# is every CI run and every Vercel deploy.
+#
+# All of these are optional native accelerators with working pure-JS fallbacks:
+#   bufferutil, utf-8-validate  ws speedups, pulled in via WalletConnect
+#   keccak, secp256k1           transitive; viem uses @noble/* in pure JS
+#   sharp                       image optimisation, unused here
+#   unrs-resolver               resolver addon
+#
+# Declining them keeps installs hermetic and reproducible, and avoids compiling
+# native code on a build machine for no benefit.
 allowBuilds:
-  bufferutil: set this to true or false
-  keccak: set this to true or false
-  secp256k1: set this to true or false
+  bufferutil: false
+  keccak: false
+  secp256k1: false
   sharp: false
   unrs-resolver: false
-  utf-8-validate: set this to true or false
+  utf-8-validate: false
+
+# ── supply-chain policy ──────────────────────────────────────────────────────
+#
+# pnpm 11 refuses packages published inside its minimum-release-age window, so a
+# very fresh release fails the install. These two were reviewed and accepted at
+# the pinned versions; the pin is deliberate, so a future release has to be
+# looked at again rather than inheriting the exemption.
 minimumReleaseAgeExclude:
   - '@tanstack/query-core@5.102.2'
   - '@tanstack/react-query@5.102.2'
