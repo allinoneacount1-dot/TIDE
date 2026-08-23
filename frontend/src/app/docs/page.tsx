@@ -1,117 +1,227 @@
-"use client";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SiteHeader } from "@/components/marketing/SiteHeader";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
+import { TideLine } from "@/components/tide/TideLine";
+import { getDeployment } from "@/lib/config";
+import { DEFAULT_CHAIN_ID, getChain } from "@/lib/chains";
+import { PROTOCOL } from "@/lib/config";
+import { formatBps } from "@/lib/format";
 
-function XIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
-  return <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true"><path d="M18.9 2H22L13.82 11.04L23 22H14.63L8.62 14.55L1.74 22H0L8.92 12.19L0 2H8.62L14.63 9.14L18.9 2ZM17.3 20H19.14L7 4H5.05L17.3 20Z" fill="currentColor" /></svg>;
-}
+export const metadata: Metadata = {
+  title: "Documentation",
+  description:
+    "How TIDE executes recurring investments on Robinhood Chain: the contracts, the guards, the data sources and the operating limits.",
+};
 
+/**
+ * Reference page.
+ *
+ * Written to be checkable rather than persuasive. Where a number appears it is
+ * either read from the deployment record at build time or is a compiled-in
+ * protocol constant — nothing here is a figure someone typed into a marketing
+ * page and forgot to update, which is how the previous docs came to describe a
+ * chain ID, a test count and an indexer that did not exist.
+ */
 export default function DocsPage() {
-  const rootRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const ctx = gsap.context(() => {
-      gsap.from(".gsap-doc-header", { y: -12, opacity: 0, duration: 0.6, ease: "power3.out" });
-      gsap.from(".gsap-doc-title", { y: 18, opacity: 0, duration: 0.7, ease: "power3.out", delay: 0.1 });
-      gsap.from(".gsap-doc-card", { y: 20, opacity: 0, duration: 0.6, stagger: 0.08, ease: "power3.out", scrollTrigger: { trigger: ".gsap-doc-grid", start: "top 88%" } });
-    }, rootRef);
-    return () => ctx.revert();
-  }, []);
+  const deployment = getDeployment(DEFAULT_CHAIN_ID);
+  const chain = getChain(DEFAULT_CHAIN_ID);
 
   return (
-    <div ref={rootRef} className="min-h-screen bg-[#08090a] text-[#f7f8f8] selection:bg-[rgba(204,255,0,0.2)]">
-      <header className="gsap-doc-header sticky top-0 z-40 backdrop-blur-[12px] bg-[#08090a]/80 border-b border-[rgba(255,255,255,0.05)]">
-        <div className="mx-auto max-w-[1440px] px-4 lg:px-6 h-[52px] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2.5 hover:opacity-90">
-              <div className="w-[26px] h-[26px] rounded-[6px] bg-[#0A0B0A] border border-[rgba(255,255,255,0.08)] flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 32 32" fill="none"><path d="M6 20 C9 14, 12 22, 16 16 C20 10, 23 18, 26 14" stroke="#CCFF00" strokeWidth="2.4" strokeLinecap="round" /><path d="M6 23 C9 17, 12 25, 16 19 C20 13, 23 21, 26 17" stroke="#CCFF00" strokeWidth="1.7" strokeLinecap="round" opacity="0.55" /><circle cx="16" cy="8.2" r="1.7" fill="#CCFF00" /></svg></div>
-              <span className="tide-3d text-[16px] font-[800] tracking-[-0.04em]">TIDE</span>
+    <>
+      <SiteHeader />
+      <main id="main">
+        <section className="shell pt-12 md:pt-20">
+          <div className="h-px w-full bg-signal" />
+          <p className="t-eyebrow mt-4">Documentation</p>
+          <h1 className="t-display mt-3 max-w-[18ch] text-[clamp(2rem,5vw,3.5rem)]">
+            How a cycle actually settles.
+          </h1>
+          <p className="mt-5 max-w-[62ch] text-[15px] leading-[1.65] text-mid">
+            TIDE is a recurring execution protocol for tokenized equities on Robinhood Chain. This
+            page covers the parts you would want to verify before depositing: what the contracts do,
+            what guards an execution, where the data comes from, and what the operating limits are.
+          </p>
+        </section>
+
+        <Section id="model" eyebrow="01" title="The model">
+          <P>
+            A <Term>vault</Term> is a contract you own. It holds quote capital and nothing else can
+            move it. A <Term>plan</Term> is an instruction inside that vault: buy this asset, this
+            much, this often, never above this price. A <Term>keeper</Term> is an address permitted
+            to trigger a plan when its window opens — and permitted to do nothing else.
+          </P>
+          <P>
+            Vaults are EIP-1167 minimal proxies deployed by the registry, so creating one costs a
+            fraction of a full deployment. The implementation is immutable and unowned; there is no
+            proxy admin and no upgrade path.
+          </P>
+        </Section>
+
+        <Section id="guards" eyebrow="02" title="What guards an execution">
+          <P>
+            Every execution must clear a floor computed on chain, and the floor is the tighter of
+            two independent constraints:
+          </P>
+          <Dl
+            items={[
+              [
+                "Your limit price",
+                "The highest price you are willing to pay, stored on the plan. Nobody but you can change it.",
+              ],
+              [
+                "The oracle band",
+                "The registry's Chainlink feed for that asset, less your slippage tolerance. Chainlink is Robinhood Chain's official oracle; Pyth is not deployed there.",
+              ],
+            ]}
+          />
+          <P>
+            The keeper supplies its own <Term>minOut</Term> from the live route, but the contract
+            takes <em className="text-hi not-italic">whichever floor is higher</em>. A keeper passing
+            zero cannot execute below your guard. A plan with neither a limit price nor a feed is
+            never executable at all — it reports <Term>Unguarded</Term> rather than trading blind.
+          </P>
+          <P>
+            Output is measured as the vault&rsquo;s own balance delta before and after the swap, so a
+            router that reports one number and delivers another is caught by arithmetic rather than
+            by trust.
+          </P>
+        </Section>
+
+        <Section id="limits" eyebrow="03" title="Limits, in the contract">
+          <Dl
+            items={[
+              ["Protocol fee ceiling", `${formatBps(PROTOCOL.maxFeeBps)} — a compiled-in constant, not a governance parameter`],
+              ["Maximum slippage tolerance", formatBps(PROTOCOL.maxSlippageBps)],
+              ["Interval range", "1 hour to 1 year"],
+              ["Withdrawal", "Never blocked — not by a vault pause, not by a protocol halt, not by a dead oracle"],
+              ["Ownership transfer", "Two-step, so a mistyped address cannot orphan a vault"],
+            ]}
+          />
+        </Section>
+
+        <Section id="oracle" eyebrow="04" title="Why nothing executes at the weekend">
+          <P>
+            Chainlink&rsquo;s tokenized-equity feeds run <Term>us_equities_24/5</Term> with a 24-hour
+            heartbeat. Outside market hours the last answer ages, and once it passes the registry&rsquo;s
+            freshness window the vault reports <Term>Awaiting market</Term> and refuses to execute.
+          </P>
+          <P>
+            This is deliberate rather than a limitation. On-chain liquidity for an equity is thinnest
+            exactly when the underlying market is shut, which is when a scheduled buy would fill
+            worst. Waiting for the open is the correct behaviour, and the cadence is preserved: the
+            window stays open until the execution happens.
+          </P>
+        </Section>
+
+        <Section id="data" eyebrow="05" title="Where the data comes from">
+          <Dl
+            items={[
+              ["Balances, plans, readiness", "Direct contract reads over JSON-RPC. No intermediary."],
+              ["Execution history", "Blockscout's indexed log API, with a bounded eth_getLogs fallback. The interface states which one answered."],
+              ["Reference price", "The same Chainlink aggregator the on-chain guard consults — so the price on screen is the price enforcing the trade."],
+              ["Swap routes", "0x Swap API v2 on mainnet. Testnet has no aggregator at all, so a simulated router is used and labelled."],
+            ]}
+          />
+          <P>
+            Robinhood Chain produces a block roughly every 100ms. A naïve month-long{" "}
+            <Term>eth_getLogs</Term> scan would be tens of millions of blocks, which is why history
+            comes from an indexer and the RPC fallback is explicitly bounded and says so.
+          </P>
+        </Section>
+
+        <Section id="automation" eyebrow="06" title="Automation">
+          <P>
+            Neither Chainlink Automation nor Gelato supports Robinhood Chain. There is no managed
+            keeper available for this network, so TIDE ships its own — a stateless script in{" "}
+            <Term>/keeper</Term> that can run from GitHub Actions, a small VPS, or your own machine.
+          </P>
+          <P>
+            You can also execute by hand from the terminal at any time. The contract permits the
+            vault owner to call <Term>execute</Term> directly, which matters on a chain where the
+            only automation is one you run yourself.
+          </P>
+        </Section>
+
+        <Section id="deployment" eyebrow="07" title="This deployment">
+          {deployment ? (
+            <Dl
+              items={[
+                ["Network", `${chain?.name} · chain ${deployment.chainId}`],
+                ["Registry", deployment.registry],
+                ["Quote asset", deployment.quote],
+                [
+                  "Market",
+                  deployment.simulated
+                    ? "Simulated — mock assets, router and feeds published by TIDE's own deploy script"
+                    : "Live — Uniswap v3, Chainlink feeds, USDG",
+                ],
+              ]}
+            />
+          ) : (
+            <P>
+              No registry is configured for {chain?.name ?? "this network"} in this build.
+            </P>
+          )}
+          <p className="mt-6">
+            <Link
+              href="/app"
+              className="inline-flex min-h-11 items-center text-[14px] text-signal underline decoration-signal-edge underline-offset-4"
+            >
+              Open the terminal →
             </Link>
-            <span className="hidden md:inline text-[11px] font-[510] tracking-[0.06em] text-[#8a8f98] border-l border-[rgba(255,255,255,0.08)] pl-3 ml-1">DOCS</span>
-          </div>
-          <nav className="flex items-center gap-1">
-            <Link href="/proof" className="hidden sm:inline px-3 py-1.5 text-[12px] font-[510] text-[#8a8f98] hover:text-[#f7f8f8]">Proof</Link>
-            <Link href="/security" className="hidden sm:inline px-3 py-1.5 text-[12px] font-[510] text-[#8a8f98] hover:text-[#f7f8f8]">Security</Link>
-            <Link href="/app" className="ml-2 h-[32px] px-4 inline-flex items-center rounded-[6px] bg-[#CCFF00] text-black text-[12px] font-[650]">Launch App →</Link>
-          </nav>
-        </div>
-      </header>
+          </p>
+        </Section>
+      </main>
+      <SiteFooter />
+    </>
+  );
+}
 
-      <section className="mx-auto max-w-[1440px] px-4 lg:px-6 pt-10 lg:pt-14">
-        <div className="gsap-doc-title max-w-[720px]">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] mono text-[10px] tracking-[0.06em] text-[#8a8f98]"><span className="w-2 h-2 rounded-full bg-[#CCFF00]" /> DOCS • WIRED • VERIFIABLE</div>
-          <h1 className="mt-4 text-[32px] lg:text-[42px] leading-[0.95] font-[650] tracking-[-0.03em]" style={{ fontFamily: "Instrument Serif, Inter, serif" }}>How TIDE actually works.</h1>
-          <p className="mt-3 text-[15px] leading-6 text-[#d0d6e0]">No whitepaper fluff. This is the execution rail: ERC4626 vaults, keeper `execute()`, Pyth + 0x quote, Tenderly simulate, Blockscout index. Every metric has provenance.</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/app" className="focus-ring h-[36px] px-4 inline-flex items-center rounded-[6px] bg-[#CCFF00] text-black text-[12px] font-[650]">Create Vault →</Link>
-            <Link href="/proof" className="focus-ring h-[36px] px-4 inline-flex items-center rounded-[6px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-[12px] font-[510] hover:bg-[rgba(255,255,255,0.06)]">View Proof →</Link>
-          </div>
+function Section({
+  id,
+  eyebrow,
+  title,
+  children,
+}: {
+  id: string;
+  eyebrow: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section id={id} className="shell scroll-mt-20 border-t border-hairline py-10 md:py-14">
+      <div className="grid gap-x-8 gap-y-5 md:grid-cols-12">
+        <div className="md:col-span-4">
+          <p className="t-mono text-[13px] text-signal">{eyebrow}</p>
+          <h2 className="t-display mt-2 text-[clamp(1.35rem,2.6vw,1.9rem)]">{title}</h2>
+          <TideLine className="mt-4 max-w-[90px]" />
         </div>
+        <div className="space-y-4 md:col-span-7 md:col-start-6">{children}</div>
+      </div>
+    </section>
+  );
+}
 
-        <div className="gsap-doc-grid mt-8 grid grid-cols-12 gap-4">
-          <div className="gsap-doc-card col-span-12 lg:col-span-6 p-5 rounded-[12px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)]">
-            <h3 className="text-[13px] font-[650] tracking-[0.06em] text-[#8a8f98]">ARCHITECTURE</h3>
-            <ul className="mt-3 mono text-[12px] leading-6 text-[#d0d6e0] space-y-1">
-              <li>• <span className="text-[#f7f8f8]">Factory</span> deploys minimal-proxy ERC4626 vault per user — isolated USDC accounting</li>
-              <li>• <span className="text-[#f7f8f8]">Vault</span> holds USDC, tracks shares, exposes `totalAssets()`, `nextExecution`, `canExecute()`</li>
-              <li>• <span className="text-[#f7f8f8]">Keeper</span> (EOA / Gelato) calls `execute(amount, minOut, swapData)` after `interval` — fee `0.15%` → treasury</li>
-              <li>• <span className="text-[#f7f8f8]">Aggregator</span> allowlist — only `0x` swapData passes; `minOut` enforces `1%` slippage</li>
-              <li>• <span className="text-[#f7f8f8]">Indexer</span> polls `Executed` events every 15s, cached 30s via `useQuery`</li>
-            </ul>
-            <div className="mt-3 mono text-[10px] text-[#62666d]">Factory.createVault(asset, target, interval, keeper, aggregator) → vault address</div>
-          </div>
-          <div className="gsap-doc-card col-span-12 lg:col-span-6 p-5 rounded-[12px] bg-[#0f1011] border border-[rgba(255,255,255,0.06)]">
-            <h3 className="text-[13px] font-[650] tracking-[0.06em] text-[#8a8f98]">FLOW • WIRED END-TO-END</h3>
-            <div className="mt-3 mono text-[11px] leading-5 p-3 rounded-[8px] bg-[#08090a] border border-[rgba(255,255,255,0.05)]">
-              <div className="text-[#8a8f98]">1. User → Factory.createVault(USDC, AAPL.x, 604800, keeper, aggregator)</div>
-              <div className="text-[#f7f8f8]">2. Vault.deposit(100e6, user) — approve() → transferFrom → mint shares</div>
-              <div className="text-[#f7f8f8]">3. Keeper waits interval → 0x quote + Pyth price → Tenderly simulate</div>
-              <div className="text-[#10b981]">4. Vault.execute(100e6, 99e6, swapData) → DEX swap → +99 AAPL.x, fee 0.15</div>
-              <div className="text-[#8a8f98]">5. Event Executed indexed → Monitor re-reads totalAssets() + vault list</div>
-            </div>
-            <div className="mt-2 mono text-[10px] text-[#62666d]">State: Idle → Awaiting (sign) → Submitted → Pending (receipt) → Confirmed → indexed</div>
-          </div>
-          <div className="gsap-doc-card col-span-12 lg:col-span-4 p-5 rounded-[12px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)]">
-            <h3 className="text-[13px] font-[650] tracking-[0.06em] text-[#8a8f98]">CONTRACTS</h3>
-            <div className="mt-3 mono text-[11px] leading-5 space-y-1">
-              <div className="flex justify-between"><span className="text-[#8a8f98]">VaultFactory</span><span className="text-[#d0d6e0]">immutable, no proxy</span></div>
-              <div className="flex justify-between"><span className="text-[#8a8f98]">TideVault ERC4626</span><span className="text-[#d0d6e0]">OZ 5.3, Pausable</span></div>
-              <div className="flex justify-between"><span className="text-[#8a8f98]">KeeperRegistry</span><span className="text-[#d0d6e0]">allowlist keeper</span></div>
-              <div className="text-[#62666d] mt-2">forge test -vv → 6/6 pass • coverage 50.4%</div>
-              <a href="https://sepolia.arbiscan.io" target="_blank" rel="noopener" className="inline-flex mt-2 text-[#CCFF00] underline">View verified contracts →</a>
-            </div>
-          </div>
-          <div className="gsap-doc-card col-span-12 lg:col-span-4 p-5 rounded-[12px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)]">
-            <h3 className="text-[13px] font-[650] tracking-[0.06em] text-[#8a8f98]">DATA SOURCES</h3>
-            <ul className="mt-3 mono text-[11px] leading-5 text-[#d0d6e0]">
-              <li>• Pyth Hermes — price feed, 30s cache, staleness &gt;2m → yellow dot</li>
-              <li>• 0x Swap API — quote for minOut, slippage 1% guard</li>
-              <li>• Tenderly — simulate before broadcast, revert reason surfaced</li>
-              <li>• Blockscout — Executed events + tx explorer</li>
-            </ul>
-            <div className="mt-2 mono text-[10px] text-[#62666d]">No NEXT_PUBLIC_API_KEY in frontend — grep = 0</div>
-          </div>
-          <div className="gsap-doc-card col-span-12 lg:col-span-4 p-5 rounded-[12px] bg-[rgba(204,255,0,0.06)] border border-[rgba(204,255,0,0.12)]">
-            <h3 className="text-[13px] font-[650] tracking-[0.06em] text-[#8a8f98]">DEPLOY</h3>
-            <div className="mt-3 mono text-[11px] leading-5">
-              <div className="text-[#8a8f98]">Chain: Robinhood L2 97468 (testnet) • ETH gas &lt;$0.01</div>
-              <div className="text-[#f7f8f8]">Frontend: tide-robinhood.vercel.app — Next 15 + wagmi 2 + RainbowKit</div>
-              <div className="text-[#62666d]">Env: NEXT_PUBLIC_VAULT_FACTORY_ADDRESS, USDC, AGGREGATOR, WC_PROJECT_ID, RPC, EXPLORER</div>
-            </div>
-            <Link href="/app" className="mt-3 inline-flex h-[32px] px-3 items-center rounded-[6px] bg-[#CCFF00] text-black text-[12px] font-[590]">Open Monitor →</Link>
-          </div>
-        </div>
-      </section>
+function P({ children }: { children: React.ReactNode }) {
+  return <p className="max-w-[68ch] text-[14px] leading-[1.7] text-mid">{children}</p>;
+}
 
-      <footer className="border-t border-[rgba(255,255,255,0.05)] mt-8">
-        <div className="mx-auto max-w-[1440px] px-4 lg:px-6 h-[52px] flex items-center justify-between mono text-[11px] text-[#62666d]">
-          <span>TIDE Docs • Non-custodial • Fee 0.15% • <Link href="/" className="underline hover:text-[#d0d6e0]">← Back to landing</Link></span>
-          <a href="https://x.com/tide_robinhood" target="_blank" rel="noopener" className="hidden sm:flex items-center gap-1.5 h-[28px] px-2.5 rounded-[6px] bg-[rgba(255,255,255,0.04)] border"><XIcon /> X</a>
+function Term({ children }: { children: React.ReactNode }) {
+  return <code className="t-mono text-[13px] text-hi">{children}</code>;
+}
+
+function Dl({ items }: { items: [string, string][] }) {
+  return (
+    <dl className="border-t border-hairline">
+      {items.map(([term, detail]) => (
+        <div key={term} className="grid gap-1 border-b border-hairline py-3 sm:grid-cols-5 sm:gap-4">
+          <dt className="t-eyebrow sm:col-span-2 sm:pt-0.5">{term}</dt>
+          <dd className="t-mono break-all text-[13px] leading-[1.6] text-mid sm:col-span-3">
+            {detail}
+          </dd>
         </div>
-      </footer>
-    </div>
+      ))}
+    </dl>
   );
 }
