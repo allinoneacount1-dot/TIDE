@@ -46,8 +46,8 @@ export default function DocsPage() {
           <h1 className="mt-4 text-[32px] lg:text-[42px] leading-[0.95] font-[650] tracking-[-0.03em]" style={{ fontFamily: "Instrument Serif, Inter, serif" }}>How TIDE actually works.</h1>
           <p className="mt-3 text-[15px] leading-6 text-[#d0d6e0]">No whitepaper fluff. This is the execution rail: ERC4626 vaults, keeper `execute()`, Pyth + 0x quote, Tenderly simulate, Blockscout index. Every metric has provenance.</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/app" className="h-[36px] px-4 inline-flex items-center rounded-[6px] bg-[#CCFF00] text-black text-[12px] font-[650]">Create Vault →</Link>
-            <a href="https://github.com/allinoneacount1-dot/TIDE#readme" target="_blank" rel="noopener" className="h-[36px] px-4 inline-flex items-center rounded-[6px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-[12px] font-[510]">GitHub README →</a>
+            <Link href="/app" className="focus-ring h-[36px] px-4 inline-flex items-center rounded-[6px] bg-[#CCFF00] text-black text-[12px] font-[650]">Create Vault →</Link>
+            <Link href="/proof" className="focus-ring h-[36px] px-4 inline-flex items-center rounded-[6px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-[12px] font-[510] hover:bg-[rgba(255,255,255,0.06)]">View Proof →</Link>
           </div>
         </div>
 
