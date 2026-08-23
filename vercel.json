@@ -2,6 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "outputDirectory": "frontend/.next",
-  "installCommand": "corepack enable && corepack prepare pnpm@11.22.0 --activate && cd frontend && pnpm install --frozen-lockfile",
-  "buildCommand": "cd frontend && pnpm build"
+  "installCommand": "cd frontend && npx --yes pnpm@11.22.0 --version && npx --yes pnpm@11.22.0 install --frozen-lockfile",
+  "buildCommand": "cd frontend && npx --yes pnpm@11.22.0 run build"
 }
