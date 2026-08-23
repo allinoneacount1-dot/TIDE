@@ -61,7 +61,7 @@ export default function Home() {
         address: ADDRESSES.factory,
         abi: factoryAbi,
         functionName: "createVault",
-        args: [ADDRESSES.usdc, target as `0x${string}`, interval, address, ADDRESSES.aggregator],
+        args: [ADDRESSES.usdc, target as `0x${string}`, BigInt(interval), address, ADDRESSES.aggregator],
       });
       setTxHash(hash);
       setMode("submitted");
