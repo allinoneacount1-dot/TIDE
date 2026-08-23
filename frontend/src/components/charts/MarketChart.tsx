@@ -52,11 +52,15 @@ export function MarketChart({
   height = 380,
   interval = "D",
   className,
+  /** What still works if the embed does not. Differs by surface, so the
+   *  fallback copy is never wrong about its own context. */
+  fallbackNote = "This affects market context only. Nothing else on the page depends on it.",
 }: {
   symbol: string | undefined;
   height?: number;
   interval?: "60" | "D" | "W";
   className?: string;
+  fallbackNote?: string;
 }) {
   const holder = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
@@ -142,15 +146,34 @@ export function MarketChart({
     );
   }
 
+  // A failed embed collapses to a stated reason rather than leaving a void the
+  // size of the chart that was supposed to be there.
+  if (failed) {
+    return (
+      <div className={cn("flex items-start gap-3 px-4 py-8 md:px-5", className)}>
+        <div className="w-[2px] shrink-0 self-stretch bg-warn" />
+        <div className="max-w-[52ch] space-y-1.5">
+          <p className="t-eyebrow text-warn">Market chart unavailable</p>
+          <p className="text-[12.5px] leading-[1.55] text-mid">
+            TradingView&rsquo;s widget did not load — usually a network filter or a content
+            blocker. {fallbackNote}
+          </p>
+          <a
+            href={`https://www.tradingview.com/symbols/${venue.replace(":", "-")}/`}
+            target="_blank"
+            rel="noopener nofollow"
+            className="inline-flex min-h-6 items-center text-[12.5px] text-mid underline decoration-rule underline-offset-2 transition-colors hover:text-signal"
+          >
+            Open {symbol} on TradingView →
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={className}>
       <div ref={holder} style={{ height }} className={cn(!inView && "skeleton")} />
-      {failed ? (
-        <p className="px-4 py-3 text-[12px] text-warn md:px-5">
-          The TradingView widget could not load. This affects market context only — your vault data
-          below is read directly from the chain and is unaffected.
-        </p>
-      ) : null}
       <p className="px-4 pb-3 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-dim md:px-5">
         Market data ·{" "}
         <a

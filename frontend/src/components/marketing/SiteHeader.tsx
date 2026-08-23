@@ -4,13 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Wordmark } from "@/components/identity/Wordmark";
 import { Button } from "@/components/primitives/Button";
+import { XLogo } from "@/components/identity/XLogo";
 import { cn } from "@/lib/cn";
 
 const NAV = [
   { href: "#mechanism", label: "Mechanism" },
+  { href: "#market", label: "Market" },
   { href: "#guarantees", label: "Guarantees" },
   { href: "/docs", label: "Docs" },
 ] as const;
+
+export const X_URL = "https://x.com/tidehood";
 
 /**
  * The header does one thing on scroll: it thins.
@@ -58,14 +62,32 @@ export function SiteHeader() {
               <span className="absolute inset-x-3 bottom-1 h-px origin-left scale-x-0 bg-signal transition-transform duration-200 group-hover:scale-x-100" />
             </Link>
           ))}
-          <Link href="/app" className="ml-2">
+          <a
+            href={X_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="TIDE on X"
+            className="ml-1 inline-flex size-8 items-center justify-center text-low transition-colors hover:text-hi"
+          >
+            <XLogo />
+          </a>
+          <Link href="/app" className="ml-1">
             <Button variant="primary" size="sm">
               Launch TIDE
             </Button>
           </Link>
         </nav>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-1 md:hidden">
+          <a
+            href={X_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="TIDE on X"
+            className="inline-flex size-8 items-center justify-center text-low transition-colors hover:text-hi"
+          >
+            <XLogo />
+          </a>
           <Link href="/app">
             <Button variant="primary" size="sm">
               Launch
@@ -97,11 +119,19 @@ export function SiteHeader() {
               key={item.href}
               href={item.href}
               onClick={() => setMenu(false)}
-              className="block border-b border-hairline/60 py-3 text-[14px] text-mid last:border-0"
+              className="block border-b border-hairline/60 py-3 text-[14px] text-mid"
             >
               {item.label}
             </Link>
           ))}
+          <a
+            href={X_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 py-3 text-[14px] text-mid"
+          >
+            <XLogo className="size-3.5" /> Follow on X
+          </a>
         </nav>
       ) : null}
     </header>

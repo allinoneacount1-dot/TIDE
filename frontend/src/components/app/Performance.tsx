@@ -50,7 +50,11 @@ export function Performance({
                 The underlying equity. Independent of TIDE.
               </p>
             </div>
-            <MarketChart symbol={target?.symbol} height={360} />
+            <MarketChart
+              symbol={target?.symbol}
+              height={360}
+              fallbackNote="Your vault data below is read directly from the chain and is unaffected."
+            />
           </div>
 
           <div className="bg-surface py-4">

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/identity/Wordmark";
 import { TideLine } from "@/components/tide/TideLine";
+import { XLogo } from "@/components/identity/XLogo";
+import { X_URL } from "./SiteHeader";
 
 export function SiteFooter() {
   return (
@@ -13,6 +15,15 @@ export function SiteFooter() {
               Recurring execution for tokenized equities on Robinhood Chain. Non-custodial by
               construction — TIDE never holds your keys and cannot move your assets.
             </p>
+            <a
+              href={X_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex min-h-9 items-center gap-2 bg-raised px-3 text-[13px] text-mid ring-1 ring-inset ring-rule transition-colors hover:text-hi"
+            >
+              <XLogo className="size-3.5" />
+              <span>@tidehood</span>
+            </a>
             <TideLine className="mt-6 max-w-[220px]" />
           </div>
 
@@ -27,6 +38,11 @@ export function SiteFooter() {
               <li>
                 <Link href="/#mechanism" className="inline-flex min-h-6 items-center text-mid transition-colors hover:text-signal">
                   How execution works
+                </Link>
+              </li>
+              <li>
+                <Link href="/#market" className="inline-flex min-h-6 items-center text-mid transition-colors hover:text-signal">
+                  The market it buys into
                 </Link>
               </li>
               <li>
