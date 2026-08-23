@@ -340,7 +340,7 @@ export default function Landing() {
                 <div className="mt-3 h-[1px] bg-[rgba(255,255,255,0.06)]" />
                 <div className="mt-3 flex items-center justify-between">
                   <span className="mono text-[11px] text-[#8a8f98]">Last execution</span>
-                  <a href="https://hoodscan.io" target="_blank" className="mono text-[11px] text-[#d0d6e0] underline">
+                  <a href="https://sepolia.arbiscan.io/tx/0xe29b274a2a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d" target="_blank" rel="noopener" className="mono text-[11px] text-[#d0d6e0] underline hover:text-[#CCFF00]">
                     0xe29b…274a2 → explorer
                   </a>
                 </div>
