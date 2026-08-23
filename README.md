@@ -44,6 +44,21 @@ chain. See [Testing](#testing).
 
 Requires Node 20+, pnpm, and [Foundry](https://book.getfoundry.sh/getting-started/installation).
 
+**One command**, if you just want to see it work:
+
+```bash
+./scripts/devnet.sh          # macOS / Linux
+powershell -ExecutionPolicy Bypass -File scripts\devnet.ps1   # Windows
+```
+
+That starts a local chain, deploys the contracts and a full simulated market,
+funds a test account with 100,000 USDG, points the frontend at it and opens the
+app. Import Anvil's first key into your wallet, add network 46630 at
+`http://127.0.0.1:8545`, and the whole loop works — create a vault, deposit,
+configure a plan, execute, watch the ledger fill, withdraw.
+
+The rest of this section is the same thing done by hand.
+
 ```bash
 # 1. contracts
 cd contracts

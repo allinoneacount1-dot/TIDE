@@ -15,4 +15,29 @@ export type GeneratedDeployment = {
 };
 
 export const generatedDeployments: Record<number, GeneratedDeployment> =
-  {} as never;
+  {
+  "46630": {
+    "chainId": 46630,
+    "feeds": [
+      "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
+      "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
+      "0x09635F643e140090A9A8Dcd712eD6285858ceBef"
+    ],
+    "implementation": "0xf0D7de80A1C242fA3C738b083C422d65c6c7ABF1",
+    "quote": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
+    "quoteFeed": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+    "registry": "0xc5a5C42992dECbae36851359345FE25997F5C42d",
+    "router": "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+    "simulated": true,
+    "symbols": [
+      "AAPL",
+      "NVDA",
+      "SPY"
+    ],
+    "targets": [
+      "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
+      "0x59b670e9fA9D0A427751Af201D676719a970857b",
+      "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1"
+    ]
+  }
+} as never;

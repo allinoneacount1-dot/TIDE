@@ -1,5 +1,52 @@
 # Troubleshooting
 
+## Every Robinhood Chain endpoint times out or fails TLS
+
+Check what the hostname actually resolves to before assuming the endpoint is
+down:
+
+```bash
+# Linux / macOS
+getent hosts rpc.testnet.chain.robinhood.com
+# Windows
+Resolve-DnsName rpc.testnet.chain.robinhood.com
+```
+
+If `rpc.mainnet…`, `rpc.testnet…`, `docs.robinhood.com` and
+`faucet.testnet…` all resolve to **the same address**, and that address belongs
+to your own ISP rather than to Robinhood, your DNS is being intercepted. TLS
+then fails with a certificate trust error, because the certificate presented is
+not Robinhood's.
+
+This is common on Indonesian ISPs, which filter at the DNS layer. Changing your
+resolver to 1.1.1.1 or 8.8.8.8 usually does **not** help, because the
+interception is transparent — the query is answered before it reaches the
+resolver you chose.
+
+What works:
+
+| | |
+|---|---|
+| RPC | `robinhood-{mainnet,testnet}.g.alchemy.com` — a different domain, not filtered. Free tier at alchemy.com |
+| Mainnet explorer | `robinhoodchain.blockscout.com` — behind Cloudflare, not filtered |
+| Testnet explorer, faucet | On `robinhood.com`. No workaround but a VPN |
+
+So a testnet deployment from a filtered network needs a VPN for the faucet step
+only; the deployment itself can go through Alchemy:
+
+```bash
+forge script script/DeploySimulated.s.sol:DeploySimulated \
+  --rpc-url https://robinhood-testnet.g.alchemy.com/v2/$ALCHEMY_KEY \
+  --account tide-deployer --broadcast
+```
+
+Set the same URL as `NEXT_PUBLIC_ROBINHOOD_TESTNET_RPC_URL` so the browser uses
+it too. Note that anyone visiting your site from a filtered network hits the
+same wall on the default public endpoint — configuring Alchemy fixes it for
+them as well as for you.
+
+---
+
 ## The terminal says "No deployment on this network"
 
 `getDeployment()` found no registry for the connected chain.
