@@ -1,0 +1,10 @@
+{
+  "name": "tide",
+  "private": true,
+  "description": "Recurring execution for tokenized equities on Robinhood Chain.",
+  "license": "MIT",
+  "packageManager": "pnpm@11.22.0",
+  "engines": {
+    "node": ">=20"
+  }
+}
