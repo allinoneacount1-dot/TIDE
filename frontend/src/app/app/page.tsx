@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from "wagmi";
 import { useState, useMemo } from "react";
@@ -72,7 +73,7 @@ export default function Home() {
       <header className="sticky top-0 z-30 backdrop-blur-[12px] bg-[#08090a]/80 border-b border-[rgba(255,255,255,0.05)]">
         <div className="mx-auto max-w-[1440px] px-4 lg:px-6 h-[48px] flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2.5">
+            <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
               <div className="w-[26px] h-[26px] rounded-[6px] bg-[#0A0B0A] border border-[rgba(255,255,255,0.08)] flex items-center justify-center shadow-[0_2px_6px_rgba(0,0,0,0.35)]">
                 <svg width="16" height="16" viewBox="0 0 32 32" fill="none" aria-hidden="true">
                   <path d="M6 20 C9 14, 12 22, 16 16 C20 10, 23 18, 26 14" stroke="#CCFF00" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -81,7 +82,9 @@ export default function Home() {
                 </svg>
               </div>
               <span className="tide-3d text-[16px] font-[800] tracking-[-0.04em]" style={{ fontFeatureSettings: '"cv01","ss03"' }}>TIDE</span>
-              <span className="hidden sm:inline text-[11px] font-[510] tracking-[0.06em] text-[#8a8f98] border-l border-[rgba(255,255,255,0.08)] pl-4 ml-1">RECURRING EXECUTION • MONITOR</span>
+            </Link>
+            <span className="hidden sm:inline text-[11px] font-[510] tracking-[0.06em] text-[#8a8f98] border-l border-[rgba(255,255,255,0.08)] pl-4 ml-1">RECURRING EXECUTION • MONITOR</span>
+            <Link href="/" className="hidden sm:inline-flex items-center gap-1 ml-3 px-2 py-1 rounded-[6px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] text-[11px] font-[510] text-[#8a8f98] hover:text-[#f7f8f8] hover:bg-[rgba(255,255,255,0.05)]">← Home</Link>
             </div>
             <nav className="hidden lg:flex items-center gap-1 ml-6">
               <span className="px-2.5 py-1 rounded-[6px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-[12px] font-[510] text-[#f7f8f8]">Vaults</span>
