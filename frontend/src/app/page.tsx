@@ -279,7 +279,7 @@ export default function Landing() {
               style={{ fontFamily: "Instrument Serif, Inter, serif", fontFeatureSettings: '"cv01","ss03"' }}
             >
               <span className="gsap-line block overflow-hidden">
-                <span className="block">Capital</span>
+                <span className="gsap-tide-3d tide-3d inline-block will-change-transform">Capital</span>
               </span>
               <span className="gsap-line block overflow-hidden">
                 <span className="gsap-tide-3d tide-3d inline-block will-change-transform">compounds</span>
