@@ -1,0 +1,12 @@
+node_modules
+.out
+cache
+broadcast
+.pnpm-store
+.env
+.env.local
+frontend/.env.local
+frontend/node_modules
+frontend/.next
+frontend/out
+.DS_Store

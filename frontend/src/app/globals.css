@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0A0B0A;
+  --surface-1: #121412;
+  --surface-2: #1A1D1A;
+  --line: #262A26;
+  --text-primary: #F2F2F0;
+  --text-muted: #8A8F8A;
+  --accent: #CCFF00;
+}
+
+* { border-color: var(--line); }
+body { background: var(--bg); color: var(--text-primary); font-family: Inter, system-ui, sans-serif; }
+.mono { font-family: JetBrains Mono, ui-monospace, monospace; }
+.grid-swiss { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
+.card { background: var(--surface-1); border: 1px solid var(--line); border-radius: 8px; }
+.pill { border-radius: 999px; padding: 2px 8px; font-size: 12px; border: 1px solid var(--line); }
+.accent-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--accent); display: inline-block; }
