@@ -1,66 +1,40 @@
-## Foundry
+# TIDE contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Foundry. Two contracts and a price library.
 
-Foundry consists of:
+| | |
+|---|---|
+| `TideRegistry.sol` | Per-chain configuration and vault deployment. Holds no capital |
+| `TideVault.sol` | Per-user vault. Capital, plans, execution, withdrawal |
+| `libraries/PriceMath.sol` | Conversions on a fixed 1e8 price scale |
+| `mocks/` | A market for devnet and testnet, plus hostile counterparties for tests |
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+forge install
+forge build
+forge test           # 54 tests
+forge test --summary
 ```
 
-### Test
+Full reference: [`docs/contracts.md`](../docs/contracts.md).
+Deployment: [`docs/deployment.md`](../docs/deployment.md).
+Threat model: [`docs/security.md`](../docs/security.md).
 
-```shell
-$ forge test
+## Deploy
+
+```bash
+# a complete simulated market — devnet, and Robinhood Chain testnet, which has
+# no stock tokens, no aggregator and no price feeds of its own
+forge script script/DeploySimulated.s.sol:DeploySimulated \
+  --rpc-url $RPC --broadcast --account tide-deployer
+
+# the real market on chain 4663
+forge script script/DeployMainnet.s.sol:DeployMainnet \
+  --rpc-url $RPC --broadcast --account tide-deployer
 ```
 
-### Format
+Both write `deployments/<chainId>.json`, which the frontend reads via
+`pnpm sync:contracts`.
 
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+> Deploy with a keystore, not a `PRIVATE_KEY` in a dotfile:
+> `cast wallet import tide-deployer --interactive`

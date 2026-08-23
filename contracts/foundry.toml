@@ -2,19 +2,49 @@
 src = "src"
 out = "out"
 libs = ["lib"]
+test = "test"
+script = "script"
+solc_version = "0.8.28"
+# Robinhood Chain is Arbitrum Nitro. Shanghai is universally supported there and
+# avoids relying on TSTORE/MCOPY, whose availability depends on the ArbOS version.
+evm_version = "shanghai"
+optimizer = true
+optimizer_runs = 20000
+via_ir = true
+ffi = false
+fs_permissions = [{ access = "read-write", path = "./deployments" }]
+bytecode_hash = "none"
 remappings = [
   "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
-  "forge-std/=lib/forge-std/src/"
+  "forge-std/=lib/forge-std/src/",
 ]
-solc_version = "0.8.26"
-optimizer = true
-optimizer_runs = 200
-via_ir = false
-ffi = false
 
 [profile.default.fuzz]
-runs = 256
+runs = 512
 
-[profile.ci]
-fuzz = { runs = 1000 }
-invariant = { runs = 500 }
+[profile.default.invariant]
+runs = 128
+depth = 32
+fail_on_revert = false
+
+[profile.ci.fuzz]
+runs = 2000
+
+[profile.ci.invariant]
+runs = 512
+depth = 64
+
+[fmt]
+line_length = 120
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+
+[rpc_endpoints]
+robinhood = "${ROBINHOOD_RPC_URL}"
+robinhood_testnet = "${ROBINHOOD_TESTNET_RPC_URL}"
+local = "http://127.0.0.1:8545"
+
+[etherscan]
+robinhood = { key = "${BLOCKSCOUT_API_KEY}", url = "https://robinhoodchain.blockscout.com/api", chain = 4663 }
+robinhood_testnet = { key = "${BLOCKSCOUT_API_KEY}", url = "https://explorer.testnet.chain.robinhood.com/api", chain = 46630 }
