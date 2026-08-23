@@ -255,7 +255,7 @@ export default function Landing() {
       </div>
 
       {/* Header */}
-      <header className="gsap-header sticky top-0 z-40 backdrop-blur-[12px] bg-[#08090a]/80 border-b border-[rgba(255,255,255,0.05)]">
+      <header className="gsap-header sticky top-0 z-40 backdrop-blur-[16px] bg-[#08090a]/75 border-b border-[rgba(255,255,255,0.05)] supports-[backdrop-filter]:bg-[#08090a]/60">
         <div className="mx-auto max-w-[1440px] px-4 lg:px-6 h-[52px] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-[26px] h-[26px] rounded-[6px] bg-[#0A0B0A] border border-[rgba(255,255,255,0.08)] flex items-center justify-center shadow-[0_2px_6px_rgba(0,0,0,0.35)]">

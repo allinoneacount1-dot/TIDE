@@ -198,7 +198,6 @@ export default function Home() {
                 </button>
               )}
               <TxStates hash={txHash} />
-              <div className="mono text-[10px] leading-3 text-[#62666d]">Wiring: UI → wagmi → Factory.createVault() → RPC → Confirmed → Indexer → UI. No hardcoded vaults.</div>
             </div>
           </div>
 
