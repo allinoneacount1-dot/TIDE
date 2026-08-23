@@ -204,6 +204,32 @@ export default function Landing() {
         el.addEventListener("mouseleave", () => gsap.to(el, { y: 0, duration: 0.18, ease: "power2.out" }));
       });
 
+      // -- magnetic hover for CTAs (visual polish)
+      const magneticEls = gsap.utils.toArray<HTMLElement>(".gsap-magnetic");
+      magneticEls.forEach((el) => {
+        const bounds = () => el.getBoundingClientRect();
+        el.addEventListener("mousemove", (e) => {
+          const b = bounds();
+          const x = (e.clientX - b.left - b.width / 2) * 0.15;
+          const y = (e.clientY - b.top - b.height / 2) * 0.25;
+          gsap.to(el, { x, y, duration: 0.3, ease: "power2.out" });
+        });
+        el.addEventListener("mouseleave", () => gsap.to(el, { x: 0, y: 0, duration: 0.4, ease: "power3.out" }));
+      });
+
+      // -- pin + scrub for proof section (editorial depth)
+      ScrollTrigger.create({
+        trigger: ".gsap-proof",
+        start: "top 70%",
+        end: "bottom 40%",
+        scrub: 0.5,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          gsap.to(".gsap-proof-left", { y: progress * -8, duration: 0.1, overwrite: true });
+          gsap.to(".gsap-proof-right", { y: progress * 8, duration: 0.1, overwrite: true });
+        },
+      });
+
       // -- global page-transition on /app links: fade out before navigate
       const appLinks = gsap.utils.toArray<HTMLAnchorElement>('a[href="/app"]');
       appLinks.forEach((a) => {
@@ -294,7 +320,7 @@ export default function Landing() {
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 href="/app"
-                className="gsap-hero-cta h-[44px] px-6 inline-flex items-center rounded-[8px] bg-[#CCFF00] text-black text-[14px] font-[700] tracking-[-0.01em] hover:bg-[#d4ff33] transition-colors shadow-[0_4px_12px_rgba(204,255,0,0.18)]"
+                className="gsap-hero-cta gsap-magnetic focus-ring h-[44px] px-6 inline-flex items-center rounded-[8px] bg-[#CCFF00] text-black text-[14px] font-[700] tracking-[-0.01em] hover:bg-[#d4ff33] transition-colors shadow-[0_4px_12px_rgba(204,255,0,0.18)] will-change-transform"
               >
                 Launch App — Create Vault
               </Link>
@@ -445,13 +471,13 @@ export default function Landing() {
         <div className="gsap-cta p-5 lg:p-6 rounded-[12px] bg-[#CCFF00] text-black flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 will-change-transform">
           <div>
             <div className="text-[11px] font-[650] tracking-[0.08em] opacity-70">CONTEXT BEFORE CONSENT — DISCIPLINE &gt; PREDICTION</div>
-            <div className="text-[18px] font-[700] tracking-[-0.02em] mt-1">Start your tide. Set once. Verify forever.</div>
+            <div className="text-[18px] font-[700] tracking-[-0.02em] mt-1" style={{ letterSpacing: "-0.02em" }}>Start your tide. Set once. Verify forever.</div>
           </div>
           <div className="flex gap-2">
-            <Link href="/app" className="h-[40px] px-6 inline-flex items-center rounded-[8px] bg-black text-[#CCFF00] text-[14px] font-[700]">
+            <Link href="/app" className="gsap-magnetic focus-ring h-[40px] px-6 inline-flex items-center rounded-[8px] bg-black text-[#CCFF00] text-[14px] font-[700] will-change-transform hover:bg-[#0a0a0a]">
               Launch App
             </Link>
-            <a href="https://x.com/tide_robinhood" target="_blank" rel="noopener" className="h-[40px] px-4 inline-flex items-center gap-2 rounded-[8px] bg-[rgba(0,0,0,0.08)] border border-[rgba(0,0,0,0.12)] text-[13px] font-[590]">
+            <a href="https://x.com/tide_robinhood" target="_blank" rel="noopener" className="focus-ring h-[40px] px-4 inline-flex items-center gap-2 rounded-[8px] bg-[rgba(0,0,0,0.08)] border border-[rgba(0,0,0,0.12)] text-[13px] font-[590] hover:bg-[rgba(0,0,0,0.12)] transition-colors">
               <XIcon className="w-3.5 h-3.5" /> Follow on X
             </a>
           </div>

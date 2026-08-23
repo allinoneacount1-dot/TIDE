@@ -141,8 +141,8 @@ export default function Home() {
         <div className="flex items-center gap-2 mono text-[11px]">
           <span className="text-[#8a8f98] hidden sm:inline">DENSITY</span>
           <div className="flex rounded-[6px] border border-[rgba(255,255,255,0.08)] overflow-hidden">
-            <button onClick={() => setDensity("comfortable")} className={`px-2.5 py-1 text-[11px] font-[510] ${density === "comfortable" ? "bg-[rgba(255,255,255,0.06)] text-[#f7f8f8]" : "text-[#8a8f98]"}`}>Comfortable</button>
-            <button onClick={() => setDensity("compact")} className={`px-2.5 py-1 text-[11px] font-[510] border-l border-[rgba(255,255,255,0.08)] ${density === "compact" ? "bg-[rgba(255,255,255,0.06)] text-[#f7f8f8]" : "text-[#8a8f98]"}`}>Compact</button>
+            <button onClick={() => setDensity("comfortable")} className={`focus-ring px-2.5 py-1 text-[11px] font-[510] ${density === "comfortable" ? "bg-[rgba(255,255,255,0.06)] text-[#f7f8f8]" : "text-[#8a8f98]"}`}>Comfortable</button>
+            <button onClick={() => setDensity("compact")} className={`focus-ring px-2.5 py-1 text-[11px] font-[510] border-l border-[rgba(255,255,255,0.08)] ${density === "compact" ? "bg-[rgba(255,255,255,0.06)] text-[#f7f8f8]" : "text-[#8a8f98]"}`}>Compact</button>
           </div>
           <span className="hidden md:inline text-[#62666d]">• {/* tweak */} 0 vaults • 0 executions • fee 0.15%</span>
         </div>
@@ -322,16 +322,6 @@ export default function Home() {
             <div className="mt-3 p-2 rounded-[6px] bg-[rgba(255,204,0,0.06)] border border-[rgba(255,204,0,0.12)] mono text-[10px] text-[#ffcc00]">Price is from Pyth Hermes (30s cache) + 0x quote. If stale &gt;2m, dot kuning + “Price delayed”.</div>
           </div>
 
-          <div className="card p-3">
-            <h3 className="text-[12px] font-[590] tracking-[0.06em]">TWEAKS</h3>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              <span className="pill">Theme: Dark</span>
-              <span className="pill">Density: {density}</span>
-              <span className="pill">Accent: Acid</span>
-              <span className="pill">Mono: JetBrains</span>
-            </div>
-            <div className="mono text-[10px] text-[#62666d] mt-2">Design should look final when tweaks hidden — Linear principle.</div>
-          </div>
         </section>
       </main>
 
