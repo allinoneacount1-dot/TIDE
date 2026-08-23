@@ -1,0 +1,16 @@
+{
+  "name": "tide-keeper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-hosted execution keeper for TIDE vaults on Robinhood Chain.",
+  "scripts": {
+    "start": "node src/index.js",
+    "once": "node src/index.js --once",
+    "dry": "node src/index.js --once --dry-run"
+  },
+  "dependencies": {
+    "viem": "^2.55.19"
+  },
+  "engines": { "node": ">=20" }
+}
