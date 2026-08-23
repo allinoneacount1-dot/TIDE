@@ -2,6 +2,9 @@
   "name": "tide-frontend",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=20 <25"
+  },
   "scripts": {
     "dev": "next dev",
     "predev": "node scripts/sync-contracts.mjs --if-available",
