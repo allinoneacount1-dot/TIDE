@@ -85,7 +85,6 @@ export default function Home() {
             </Link>
             <span className="hidden sm:inline text-[11px] font-[510] tracking-[0.06em] text-[#8a8f98] border-l border-[rgba(255,255,255,0.08)] pl-4 ml-1">RECURRING EXECUTION • MONITOR</span>
             <Link href="/" className="hidden sm:inline-flex items-center gap-1 ml-3 px-2 py-1 rounded-[6px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] text-[11px] font-[510] text-[#8a8f98] hover:text-[#f7f8f8] hover:bg-[rgba(255,255,255,0.05)]">← Home</Link>
-            </div>
             <nav className="hidden lg:flex items-center gap-1 ml-6">
               <span className="px-2.5 py-1 rounded-[6px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-[12px] font-[510] text-[#f7f8f8]">Vaults</span>
               <span className="px-2.5 py-1 text-[12px] font-[510] text-[#8a8f98]">Network</span>
