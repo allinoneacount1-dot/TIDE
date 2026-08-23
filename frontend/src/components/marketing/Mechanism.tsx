@@ -67,6 +67,7 @@ export function Mechanism() {
   const root = useScene<HTMLElement>(({ gsap, root: el, q, reduced }) => {
     const isDesktop = window.matchMedia("(min-width: 768px)").matches;
     const acts = q("[data-act]");
+    void acts;
 
     if (!isDesktop || reduced) {
       // Stacked variant: each act reveals as it enters. No pin, no scrub.
@@ -110,11 +111,10 @@ export function Mechanism() {
       },
     });
 
-    // Acts cross-fade in place rather than sliding, so the pinned diagram stays
-    // the only thing moving. Two moving elements would compete.
-    acts.forEach((act, i) => {
-      gsap.set(act, { opacity: i === 0 ? 1 : 0 });
-    });
+    // Visibility of the acts is deliberately NOT set here. GSAP and React would
+    // both be writing element.style.opacity, and React wins on every re-render —
+    // which silently unhid all six acts on top of each other. Opacity is CSS,
+    // driven by data-visible; GSAP only owns the pin and the scrub.
   });
 
   return (
@@ -137,19 +137,23 @@ export function Mechanism() {
           <CycleDiagram compact />
         </div>
 
-        <div className="relative mt-8 md:mt-10 md:min-h-[12rem]">
+        {/* min-height reserves room for the tallest act so the index rail below
+            does not jump between stages. */}
+        <div className="relative mt-8 md:mt-10 md:min-h-[15rem]">
           {ACTS.map((act, i) => (
             <article
               key={act.station}
               data-act
+              data-visible={i === active}
               className={cn(
                 "grid gap-x-8 gap-y-3 md:grid-cols-12",
-                // Desktop stacks all acts in the same box and cross-fades.
+                // Desktop stacks every act in the same box and cross-fades
+                // between them; mobile lays them out in normal flow.
                 "md:absolute md:inset-x-0 md:top-0",
+                "md:transition-opacity md:duration-500 md:ease-out",
+                "md:data-[visible=false]:pointer-events-none md:data-[visible=false]:opacity-0",
                 i > 0 && "mt-12 md:mt-0"
               )}
-              style={{ opacity: i === active ? 1 : undefined }}
-              aria-hidden={i !== active ? undefined : undefined}
             >
               <div className="md:col-span-1">
                 <span className="t-mono text-[13px] text-signal">{act.index}</span>
