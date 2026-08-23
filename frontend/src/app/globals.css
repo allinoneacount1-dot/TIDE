@@ -51,6 +51,20 @@ body {
 .card-hover:hover { background: rgba(255,255,255,0.04); border-color: var(--line-strong); }
 .pill { border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 510; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid var(--line); }
 .accent-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--accent); display: inline-block; box-shadow: 0 0 8px rgba(204,255,0,0.5); }
+.tide-3d {
+  color: #f7f8f8;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-feature-settings: "cv01","ss03";
+  text-shadow:
+    0 1px 0 #a8cc00,
+    0 2px 0 #8fb500,
+    0 3px 0 #7a9e00,
+    0 4px 0 #658700,
+    0 5px 10px rgba(0,0,0,0.45),
+    0 6px 12px rgba(0,0,0,0.35);
+  transform: perspective(600px) translateZ(0);
+  letter-spacing: -0.04em;
+}
 .focus-ring:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* Linear-style scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- TIDE Fav Icon — graphite + acid wave -->
+<rect width="32" height="32" rx="7" fill="#0A0B0A"/>
+<rect x="0.5" y="0.5" width="31" height="31" rx="6.5" stroke="white" stroke-opacity="0.08"/>
+<!-- acid wave mark -->
+<path d="M6 20 C9 14, 12 22, 16 16 C20 10, 23 18, 26 14" stroke="#CCFF00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 23 C9 17, 12 25, 16 19 C20 13, 23 21, 26 17" stroke="#CCFF00" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+<!-- T dot -->
+<circle cx="16" cy="8.5" r="1.8" fill="#CCFF00"/>
+</svg>

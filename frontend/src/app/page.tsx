@@ -73,10 +73,14 @@ export default function Home() {
         <div className="mx-auto max-w-[1440px] px-4 lg:px-6 h-[48px] flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-[22px] h-[22px] rounded-[4px] bg-[#CCFF00] flex items-center justify-center">
-                <div className="w-[9px] h-[9px] rounded-full bg-black/90" />
+              <div className="w-[26px] h-[26px] rounded-[6px] bg-[#0A0B0A] border border-[rgba(255,255,255,0.08)] flex items-center justify-center shadow-[0_2px_6px_rgba(0,0,0,0.35)]">
+                <svg width="16" height="16" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                  <path d="M6 20 C9 14, 12 22, 16 16 C20 10, 23 18, 26 14" stroke="#CCFF00" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M6 23 C9 17, 12 25, 16 19 C20 13, 23 21, 26 17" stroke="#CCFF00" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" opacity="0.55" />
+                  <circle cx="16" cy="8.2" r="1.7" fill="#CCFF00" />
+                </svg>
               </div>
-              <span className="text-[13px] font-[590] tracking-[-0.02em]" style={{ fontFeatureSettings: '"cv01","ss03"' }}>TIDE</span>
+              <span className="tide-3d text-[16px] font-[800] tracking-[-0.04em]" style={{ fontFeatureSettings: '"cv01","ss03"' }}>TIDE</span>
               <span className="hidden sm:inline text-[11px] font-[510] tracking-[0.06em] text-[#8a8f98] border-l border-[rgba(255,255,255,0.08)] pl-4 ml-1">RECURRING EXECUTION • MONITOR</span>
             </div>
             <nav className="hidden lg:flex items-center gap-1 ml-6">
