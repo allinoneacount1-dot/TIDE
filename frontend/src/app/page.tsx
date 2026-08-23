@@ -57,7 +57,6 @@ export default function Landing() {
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="/app" className="h-[44px] px-6 inline-flex items-center rounded-[8px] bg-[#CCFF00] text-black text-[14px] font-[700] tracking-[-0.01em] hover:bg-[#d4ff33] transition-colors shadow-[0_4px_12px_rgba(204,255,0,0.18)]">Launch App — Create Vault</Link>
-              <a href="https://github.com/allinoneacount1-dot/TIDE" target="_blank" className="h-[44px] px-5 inline-flex items-center rounded-[8px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-[14px] font-[510] text-[#f7f8f8] hover:bg-[rgba(255,255,255,0.06)]">View Contracts</a>
               <span className="mono text-[11px] text-[#62666d] self-center">Fee 0.15% • ERC4626 • No token</span>
             </div>
             <div className="mt-4 flex items-center gap-3 mono text-[11px] text-[#8a8f98]">
