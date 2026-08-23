@@ -6,6 +6,12 @@
  * contract silently — the call still typechecks, it just reverts at runtime in
  * front of a user. Running this in `predev`/`prebuild` makes drift a build
  * error instead.
+ *
+ * `--if-available` is for hosts that build the frontend without Foundry —
+ * Vercel, Netlify, a Docker stage that only copies `frontend/`. There, the
+ * committed generated files are the source of truth and this exits quietly
+ * rather than failing the build. It still fails loudly when neither the
+ * artifacts nor the generated files exist, because that is a real problem.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -23,8 +29,18 @@ const WANTED = [
   ["MockAggregatorV3", "MockAggregatorV3.sol/MockAggregatorV3.json"],
 ];
 
+const optional = process.argv.includes("--if-available");
+
 if (!existsSync(out)) {
-  console.error(`\n  contracts/out not found.\n  Run \`cd contracts && forge build\` first.\n`);
+  if (optional && existsSync(dest)) {
+    console.log("  contracts/out not found — using the committed generated files.");
+    process.exit(0);
+  }
+  console.error(
+    `\n  contracts/out not found.\n` +
+      `  Run \`cd contracts && forge build\` first,\n` +
+      `  or commit src/lib/abi.generated.ts if this host has no Foundry.\n`
+  );
   process.exit(1);
 }
 

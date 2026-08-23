@@ -8,16 +8,15 @@ contracts/cache
 contracts/broadcast
 contracts/.env
 
-# Deployment records and generated ABIs are build artifacts: `forge script`
-# writes the first, `pnpm sync:contracts` derives the second from the Foundry
-# output. Committing devnet addresses would ship anvil's deterministic
-# addresses as if they were a real deployment.
-#
-# If you deploy the frontend from a separate repository, commit
-# frontend/src/lib/*.generated.ts there — see docs/deployment.md.
+# Deployment records are per-environment: `forge script` writes them, and
+# committing a devnet record would ship Anvil's deterministic addresses as
+# though they were a real deployment. Hosted builds use NEXT_PUBLIC_TIDE_*.
 contracts/deployments/*.json
-frontend/src/lib/abi.generated.ts
-frontend/src/lib/deployments.generated.ts
+
+# The generated frontend files ARE committed. Hosts that build only `frontend/`
+# — Vercel, Netlify, a Docker stage — have no Foundry, so they cannot regenerate
+# them and the build would fail on a missing module. `pnpm sync:contracts`
+# refreshes them whenever the contracts are rebuilt locally.
 
 # frontend
 frontend/.next
