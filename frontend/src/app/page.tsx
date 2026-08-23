@@ -310,8 +310,19 @@ export default function Home() {
 
       <footer className="border-t border-[rgba(255,255,255,0.05)] mt-6">
         <div className="mx-auto max-w-[1440px] px-4 lg:px-6 h-[48px] flex items-center justify-between mono text-[11px] text-[#62666d]">
-          <span>TIDE © 2026 — Fee 0.15% on execution • Non-custodial • No token • <a className="underline hover:text-[#8a8f98]" href="https://github.com/allinoneacount1-dot/TIDE" target="_blank">github.com/allinoneacount1-dot/TIDE</a></span>
-          <span className="hidden sm:inline flex items-center gap-1.5"><StatusDot state="live" /> WIRED • Not mocked • 31337 • Anvil verified</span>
+          <span>TIDE © 2026 — Fee 0.15% on execution • Non-custodial • No token</span>
+          <a
+            href="https://x.com/tide_robinhood"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-1.5 h-[28px] px-2.5 rounded-[6px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] hover:bg-[rgba(255,255,255,0.06)] hover:border-[rgba(255,255,255,0.12)] transition-colors"
+            aria-label="Follow TIDE on X"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M18.9 2H22L13.82 11.04L23 22H14.63L8.62 14.55L1.74 22H0L8.92 12.19L0 2H8.62L14.63 9.14L18.9 2ZM17.3 20H19.14L7 4H5.05L17.3 20Z" fill="currentColor" />
+            </svg>
+            <span className="text-[11px] font-[510] tracking-[0.04em] text-[#d0d6e0]">X</span>
+          </a>
         </div>
       </footer>
     </div>
