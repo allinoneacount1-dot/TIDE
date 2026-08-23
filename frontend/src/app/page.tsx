@@ -293,7 +293,10 @@ export default function Landing() {
       </header>
 
       {/* HERO — Decide surface */}
-      <section className="gsap-hero mx-auto max-w-[1440px] px-4 lg:px-6 pt-10 lg:pt-16">
+      <section className="gsap-hero relative mx-auto max-w-[1440px] px-4 lg:px-6 pt-10 lg:pt-16 overflow-hidden">
+        {/* subtle acid mesh + grid — editorial depth, not decoration */}
+        <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.07]" style={{ background: `radial-gradient(600px 400px at 30% 0%, rgba(204,255,0,0.18), transparent 60%), radial-gradient(800px 600px at 85% 10%, rgba(204,255,0,0.07), transparent 65%)` }} />
+        <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.04]" style={{ backgroundImage: `linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)`, backgroundSize: `32px 32px` }} />
         <div className="grid grid-cols-12 gap-6 lg:gap-8">
           <div className="col-span-12 lg:col-span-7">
             <div className="gsap-badge inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] mono text-[10px] tracking-[0.06em] text-[#8a8f98]">
@@ -410,19 +413,19 @@ export default function Landing() {
           <span className="hidden sm:inline mono text-[11px] text-[#62666d]">No wallet drainer • simulate → sign → re-read</span>
         </div>
         <div className="gsap-how-grid mt-4 grid grid-cols-12 gap-4">
-          <div className="gsap-how-card col-span-12 lg:col-span-5 p-5 rounded-[12px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] will-change-transform">
+          <div className="gsap-how-card col-span-12 lg:col-span-5 p-5 rounded-[12px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] will-change-transform hover:-translate-y-1 hover:bg-[rgba(255,255,255,0.04)] hover:border-[rgba(255,255,255,0.10)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-all duration-300">
             <div className="w-7 h-7 rounded-[6px] bg-[#CCFF00] text-black flex items-center justify-center mono text-[12px] font-[700]">01</div>
             <h3 className="mt-3 text-[16px] font-[590] tracking-[-0.01em]">Create Vault</h3>
             <p className="mono text-[12px] leading-5 text-[#8a8f98] mt-1">Factory deploys ERC4626 clone for you. Choose AAPL.x / NVDA.x / SPY.x, amount, interval. Gas &lt;$0.01 on Robinhood L2.</p>
             <div className="mono text-[10px] text-[#62666d] mt-2">Call: `Factory.createVault(usdc, target, interval, keeper, aggregator)`</div>
           </div>
-          <div className="gsap-how-card col-span-12 lg:col-span-4 p-5 rounded-[12px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] will-change-transform">
+          <div className="gsap-how-card col-span-12 lg:col-span-4 p-5 rounded-[12px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] will-change-transform hover:-translate-y-1 hover:bg-[rgba(255,255,255,0.04)] hover:border-[rgba(255,255,255,0.10)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-all duration-300">
             <div className="w-7 h-7 rounded-[6px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] flex items-center justify-center mono text-[12px] font-[700]">02</div>
             <h3 className="mt-3 text-[16px] font-[590]">Deposit USDC</h3>
             <p className="mono text-[12px] leading-5 text-[#8a8f98] mt-1">Approve once, deposit. Shares minted. TotalAssets() = USDC balance. Nothing held custodially.</p>
             <div className="mono text-[10px] text-[#62666d] mt-2">State: `Idle → Awaiting → Submitted → Pending → Confirmed`</div>
           </div>
-          <div className="gsap-how-card col-span-12 lg:col-span-3 p-5 rounded-[12px] bg-[rgba(204,255,0,0.06)] border border-[rgba(204,255,0,0.12)] will-change-transform">
+          <div className="gsap-how-card col-span-12 lg:col-span-3 p-5 rounded-[12px] bg-[rgba(204,255,0,0.06)] border border-[rgba(204,255,0,0.12)] will-change-transform hover:-translate-y-1 hover:bg-[rgba(204,255,0,0.10)] hover:border-[rgba(204,255,0,0.20)] hover:shadow-[0_8px_24px_rgba(204,255,0,0.12)] transition-all duration-300">
             <div className="w-7 h-7 rounded-[6px] bg-[#CCFF00] text-black flex items-center justify-center mono text-[12px] font-[700]">03</div>
             <h3 className="mt-3 text-[16px] font-[590]">Auto-execute</h3>
             <p className="mono text-[12px] leading-5 text-[#8a8f98] mt-1">Keeper calls `execute(amount, minOut, swapData)` after interval. Fee 0.15% to treasury. Event indexed.</p>
@@ -434,7 +437,7 @@ export default function Landing() {
       {/* PROOF */}
       <section id="proof" className="gsap-proof mx-auto max-w-[1440px] px-4 lg:px-6 mt-8">
         <div className="grid grid-cols-12 gap-4">
-          <div className="gsap-proof-left col-span-12 lg:col-span-8 p-5 rounded-[12px] bg-[#0f1011] border border-[rgba(255,255,255,0.06)]">
+          <div className="gsap-proof-left col-span-12 lg:col-span-8 p-5 rounded-[12px] bg-[#0f1011] border border-[rgba(255,255,255,0.06)] hover:bg-[#131415] hover:border-[rgba(255,255,255,0.10)] hover:-translate-y-0.5 transition-all duration-300">
             <div className="flex items-center justify-between">
               <h3 className="text-[13px] font-[650] tracking-[0.06em] text-[#8a8f98]">PROOF • NOT PROMISE</h3>
               <span className="mono text-[11px] text-[#62666d]">Blockscout • Pyth • 0x • Tenderly simulate</span>
@@ -451,7 +454,7 @@ export default function Landing() {
               <span className="px-2.5 py-1 rounded-full bg-[rgba(204,255,0,0.08)] border border-[rgba(204,255,0,0.18)] text-[#CCFF00]">Every metric has provenance</span>
             </div>
           </div>
-          <div id="security" className="gsap-proof-right col-span-12 lg:col-span-4 p-5 rounded-[12px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)]">
+          <div id="security" className="gsap-proof-right col-span-12 lg:col-span-4 p-5 rounded-[12px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] hover:bg-[rgba(255,255,255,0.04)] hover:border-[rgba(255,255,255,0.10)] hover:-translate-y-0.5 transition-all duration-300">
             <h3 className="text-[13px] font-[650] tracking-[0.06em] text-[#8a8f98]">SECURITY</h3>
             <ul className="mt-3 mono text-[12px] leading-6 text-[#d0d6e0] space-y-1">
               <li>• OZ 5.3 • ReentrancyGuard • Pausable • allowlist aggregator</li>

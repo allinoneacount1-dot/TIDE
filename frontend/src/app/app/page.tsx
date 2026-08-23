@@ -266,8 +266,9 @@ export default function Home() {
               <h3 className="text-[12px] font-[590] tracking-[0.06em]">ACCUMULATION</h3>
               <span className="mono text-[10px] text-[#62666d]">Σ amountOut vs Pyth price • WIRED</span>
             </div>
-            <div className="mt-3 h-[140px] rounded-[6px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.05)] flex items-center justify-center">
-              <div className="text-center">
+            <div className="mt-3 h-[140px] rounded-[6px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.05)] flex items-center justify-center overflow-hidden relative">
+              <div className="absolute inset-0 skeleton opacity-30 pointer-events-none" />
+              <div className="relative text-center">
                 <div className="mono text-[11px] text-[#62666d]">No data — execute at least once</div>
                 <div className="mono text-[10px] text-[#62666d] mt-1">Then: step-line of shares acquired (monotone, 1px, acid signal on hover)</div>
               </div>

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -10,6 +10,12 @@ function XIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
 
 export default function ProofPage() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
+  const onCopy = async () => {
+    await navigator.clipboard.writeText("forge test -vv");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  };
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -70,8 +76,8 @@ export default function ProofPage() {
               <div className="gsap-proof-code text-[#10b981]">✓ allowance() == 0 → UI shows green “verified” pill</div>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
-              <a href="https://sepolia.arbiscan.io" target="_blank" rel="noopener" className="h-[32px] px-3 inline-flex items-center rounded-[6px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] mono text-[11px] text-[#d0d6e0] hover:bg-[rgba(255,255,255,0.06)]">Open Blockscout →</a>
-              <button onClick={() => navigator.clipboard.writeText("forge test -vv")} className="h-[32px] px-3 inline-flex items-center rounded-[6px] bg-[#CCFF00] text-black mono text-[11px] font-[650]">Copy forge command</button>
+              <a href="https://sepolia.arbiscan.io" target="_blank" rel="noopener" className="focus-ring h-[32px] px-3 inline-flex items-center rounded-[6px] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] mono text-[11px] text-[#d0d6e0] hover:bg-[rgba(255,255,255,0.06)] transition-colors">Open Blockscout →</a>
+              <button onClick={onCopy} className={`focus-ring h-[32px] px-3 inline-flex items-center rounded-[6px] mono text-[11px] font-[650] transition-colors ${copied ? "bg-[#10b981] text-white" : "bg-[#CCFF00] text-black hover:bg-[#d4ff33]"}`}>{copied ? "Copied ✓" : "Copy forge command"}</button>
             </div>
           </div>
 
