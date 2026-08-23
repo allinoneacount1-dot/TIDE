@@ -247,15 +247,15 @@ export default function Landing() {
             </span>
           </div>
           <nav className="hidden lg:flex items-center gap-1">
-            <a href="#how" className="gsap-nav-link px-3 py-1.5 text-[12px] font-[510] text-[#8a8f98] hover:text-[#f7f8f8]">
-              How it works
-            </a>
-            <a href="#proof" className="gsap-nav-link px-3 py-1.5 text-[12px] font-[510] text-[#8a8f98] hover:text-[#f7f8f8]">
+            <Link href="/docs" className="gsap-nav-link px-3 py-1.5 text-[12px] font-[510] text-[#8a8f98] hover:text-[#f7f8f8]">
+              Docs
+            </Link>
+            <Link href="/proof" className="gsap-nav-link px-3 py-1.5 text-[12px] font-[510] text-[#8a8f98] hover:text-[#f7f8f8]">
               Proof
-            </a>
-            <a href="#security" className="gsap-nav-link px-3 py-1.5 text-[12px] font-[510] text-[#8a8f98] hover:text-[#f7f8f8]">
+            </Link>
+            <Link href="/security" className="gsap-nav-link px-3 py-1.5 text-[12px] font-[510] text-[#8a8f98] hover:text-[#f7f8f8]">
               Security
-            </a>
+            </Link>
             <Link href="/app" className="ml-2 h-[32px] px-4 inline-flex items-center rounded-[6px] bg-[#CCFF00] text-black text-[12px] font-[650] tracking-[-0.01em] hover:bg-[#d4ff33]">
               Launch App →
             </Link>
