@@ -14,7 +14,7 @@ const NAV = [
   { href: "/docs", label: "Docs" },
 ] as const;
 
-export const X_URL = "https://x.com/tidehoodRE";
+export const X_URL = "https://x.com/tidehood_";
 
 /**
  * The header does one thing on scroll: it thins.

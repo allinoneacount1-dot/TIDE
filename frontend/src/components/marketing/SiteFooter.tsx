@@ -22,7 +22,7 @@ export function SiteFooter() {
               className="mt-5 inline-flex min-h-9 items-center gap-2 bg-raised px-3 text-[13px] text-mid ring-1 ring-inset ring-rule transition-colors hover:text-hi"
             >
               <XLogo className="size-3.5" />
-              <span>@tidehoodRE</span>
+              <span>@tidehood_</span>
             </a>
             <TideLine className="mt-6 max-w-[220px]" />
           </div>
