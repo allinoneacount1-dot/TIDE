@@ -287,10 +287,11 @@ export default function TerminalPage() {
         <AppHeader vaults={[]} active={undefined} onSelect={() => {}} chainId={chainId} simulated={false} />
         <main id="main" className="shell py-16">
           <SignalRail tone="fail" title="No deployment on this network">
-            TIDE has no registry address configured for chain {chainId}. Nothing on this page will
-            read or write until one is deployed and its address is provided via{" "}
-            <code className="t-mono text-mid">NEXT_PUBLIC_TIDE_REGISTRY</code> or a deployment
-            record. Switch to a supported network, or run the deploy script.
+            TIDE has no registry address for chain {chainId}, so nothing on this page can read or
+            write. The contracts are not deployed on any public network yet. Once they are, the
+            address arrives with the deployment record — or via{" "}
+            <code className="t-mono text-mid">NEXT_PUBLIC_TIDE_REGISTRY</code> — and this page comes
+            alive on its own.
           </SignalRail>
           <div className="mt-10">
             <NetworkGuard />
