@@ -3,8 +3,8 @@
 import { useAccount, useSwitchChain } from "wagmi";
 import { Button } from "@/components/primitives/Button";
 import { SignalRail } from "@/components/data/SignalRail";
-import { getChain, isSupportedChain, SUPPORTED_CHAINS, DEFAULT_CHAIN_ID } from "@/lib/chains";
-import { isConfigured } from "@/lib/config";
+import { getChain, isSupportedChain } from "@/lib/chains";
+import { isConfigured, switchTarget } from "@/lib/config";
 
 /**
  * Network state, stated plainly.
@@ -31,50 +31,39 @@ export function NetworkGuard() {
   if (supported && deployedHere) return null;
 
   // Somewhere worth sending them: a supported chain that is not this one and
-  // has contracts. Preference for the default chain when it qualifies.
-  const elsewhere =
-    SUPPORTED_CHAINS.find((c) => c.id === DEFAULT_CHAIN_ID && c.id !== chainId && isConfigured(c.id)) ??
-    SUPPORTED_CHAINS.find((c) => c.id !== chainId && isConfigured(c.id));
+  // has contracts. When there is none, this banner has nothing to offer that
+  // the page has not already said, so it renders nothing rather than repeating
+  // the same sentence under a second heading.
+  const elsewhere = switchTarget(chainId);
+  if (!elsewhere) return null;
 
   const here = getChain(chainId);
 
   return (
     <div className="shell py-3">
       <SignalRail
-        tone={elsewhere ? "warn" : "neutral"}
-        title={
-          elsewhere ? (supported ? "Deployed on another network" : "Unsupported network") : "Not deployed yet"
-        }
+        tone="warn"
+        title={supported ? "Deployed on another network" : "Unsupported network"}
         action={
-          elsewhere ? (
-            <Button
-              size="sm"
-              variant="primary"
-              busy={isPending}
-              onClick={() => switchChain({ chainId: elsewhere.id })}
-            >
-              Switch to {elsewhere.name}
-            </Button>
-          ) : null
+          <Button
+            size="sm"
+            variant="primary"
+            busy={isPending}
+            onClick={() => switchChain({ chainId: elsewhere.id })}
+          >
+            Switch to {elsewhere.name}
+          </Button>
         }
       >
-        {elsewhere ? (
-          supported ? (
-            <>
-              Your wallet is on {here?.name ?? `chain ${chainId}`}, where TIDE has no registry. It is
-              deployed on {elsewhere.name}.
-            </>
-          ) : (
-            <>
-              Your wallet is on chain {chainId}, which TIDE does not support. Switch to{" "}
-              {elsewhere.name} to continue.
-            </>
-          )
+        {supported ? (
+          <>
+            Your wallet is on {here?.name ?? `chain ${chainId}`}, where TIDE has no registry. It is
+            deployed on {elsewhere.name}.
+          </>
         ) : (
           <>
-            TIDE&apos;s contracts are not deployed on any network yet — including{" "}
-            {here?.name ?? `chain ${chainId}`}, where your wallet is now. There is nothing to switch
-            to. This page will stay read-only until a deployment exists.
+            Your wallet is on chain {chainId}, which TIDE does not support. Switch to{" "}
+            {elsewhere.name} to continue.
           </>
         )}
         {error ? <span className="mt-1 block text-fail">{error.message.slice(0, 140)}</span> : null}

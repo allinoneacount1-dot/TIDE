@@ -1,5 +1,5 @@
 import { generatedDeployments } from "./deployments.generated";
-import { DEFAULT_CHAIN_ID } from "./chains";
+import { SUPPORTED_CHAINS, DEFAULT_CHAIN_ID } from "./chains";
 
 export type Address = `0x${string}`;
 
@@ -58,6 +58,16 @@ export function getDeployment(chainId: number | undefined): Deployment | undefin
 /** True when the app has no contract addresses for this chain and must say so. */
 export function isConfigured(chainId: number | undefined): boolean {
   return getDeployment(chainId) !== undefined;
+}
+
+/**
+ * A chain that both differs from the current one and actually has contracts —
+ * i.e. somewhere a switch would genuinely help. Undefined when TIDE is deployed
+ * nowhere, which is the case a network banner must not pretend to fix.
+ */
+export function switchTarget(chainId: number | undefined) {
+  const candidates = SUPPORTED_CHAINS.filter((c) => c.id !== chainId && isConfigured(c.id));
+  return candidates.find((c) => c.id === DEFAULT_CHAIN_ID) ?? candidates[0];
 }
 
 export const PROTOCOL = {
