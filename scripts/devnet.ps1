@@ -27,14 +27,14 @@ foreach ($exe in @($anvilExe, $forgeExe, $castExe)) {
   if (-not (Test-Path $exe)) { throw "Foundry not found at $foundry. Install it: https://book.getfoundry.sh" }
 }
 
-Write-Host "`n[1/5] starting anvil (chain 46630)" -ForegroundColor Cyan
+Write-Host "`n[1/5] starting anvil (chain 31337)" -ForegroundColor Cyan
 # Reuse a node that is already listening rather than killing processes by name.
 $up = $false
 try { & $castExe chain-id --rpc-url $RPC 2>$null | Out-Null; $up = $LASTEXITCODE -eq 0 } catch { $up = $false }
 if ($up) {
   Write-Host "      a node is already listening on 8545 - reusing it"
 } else {
-  Start-Process -FilePath $anvilExe -ArgumentList "--chain-id","46630","--block-time","1","--silent" -WindowStyle Hidden
+  Start-Process -FilePath $anvilExe -ArgumentList "--chain-id","31337","--block-time","1","--silent" -WindowStyle Hidden
   for ($i = 0; $i -lt 20; $i++) {
     Start-Sleep -Milliseconds 500
     try { & $castExe chain-id --rpc-url $RPC 2>$null | Out-Null; if ($LASTEXITCODE -eq 0) { break } } catch {}
@@ -44,7 +44,7 @@ if ($up) {
 Write-Host "[2/5] deploying contracts + simulated market" -ForegroundColor Cyan
 Push-Location (Join-Path $root "contracts")
 & $forgeExe script "script/DeploySimulated.s.sol:DeploySimulated" --rpc-url $RPC --broadcast --private-key $DEPLOYER | Out-Null
-$dep = Get-Content "deployments/46630.json" | ConvertFrom-Json
+$dep = Get-Content "deployments/31337.json" | ConvertFrom-Json
 Pop-Location
 Write-Host "      registry $($dep.registry)"
 Write-Host "      quote    $($dep.quote)"
@@ -57,14 +57,14 @@ Write-Host "[4/5] pointing the frontend at the devnet" -ForegroundColor Cyan
 $env_path = Join-Path $root "frontend\.env.local"
 @"
 # Written by scripts/devnet.ps1. Local devnet only.
-NEXT_PUBLIC_DEFAULT_CHAIN_ID=46630
+NEXT_PUBLIC_DEFAULT_CHAIN_ID=31337
 NEXT_PUBLIC_ROBINHOOD_TESTNET_RPC_URL=$RPC
 "@ | Set-Content -Path $env_path -Encoding UTF8
 
 Write-Host "[5/5] starting the app" -ForegroundColor Cyan
 Push-Location (Join-Path $root "frontend")
 if (-not (Test-Path "node_modules")) { npx --yes pnpm@11.22.0 install }
-Write-Host "`n  Import this key into your wallet and add network 46630 at $RPC" -ForegroundColor Yellow
+Write-Host "`n  Import this key into your wallet and add network 31337 at $RPC" -ForegroundColor Yellow
 Write-Host "  $DEPLOYER`n" -ForegroundColor Yellow
 Write-Host "  http://localhost:3000/app`n" -ForegroundColor Green
 npx --yes pnpm@11.22.0 dev

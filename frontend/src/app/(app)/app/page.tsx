@@ -72,7 +72,7 @@ type DrawerKind = "deposit" | "withdraw" | "plan" | "execute" | null;
 export default function TerminalPage() {
   const chainId = useChainId();
   const { isConnected } = useAccount();
-  const { deployment, configured } = useTideChain();
+  const { deployment, configured, live, verifying, phantom } = useTideChain();
 
   const { vaults, isLoading: vaultsLoading, refetch: refetchVaults } = useUserVaults();
   const [activeVault, setActiveVault] = useState<Address | undefined>();
@@ -248,7 +248,40 @@ export default function TerminalPage() {
 
   /* ── shells before the data exists ─────────────────────────────────────── */
 
-  if (!configured || !deployment) {
+  if (verifying) {
+    return (
+      <>
+        <AppHeader vaults={[]} active={undefined} onSelect={() => {}} chainId={chainId} simulated={false} />
+        <main id="main" className="shell py-16">
+          <Skeleton className="h-24 w-full" />
+        </main>
+      </>
+    );
+  }
+
+  // Addresses are configured but the registry holds no code on this chain.
+  // Saying so plainly beats letting every call fail with `returned no data`.
+  if (phantom && deployment) {
+    return (
+      <>
+        <AppHeader vaults={[]} active={undefined} onSelect={() => {}} chainId={chainId} simulated={false} />
+        <main id="main" className="shell py-16">
+          <SignalRail tone="fail" title="No contract at the configured address">
+            TIDE has a registry address for chain {chainId} —{" "}
+            <code className="t-mono text-mid">{deployment.registry}</code> — but nothing is deployed
+            there. The address book is stale, or this wallet is on a different network than the one
+            the contracts were deployed to. Nothing on this page will read or write until that is
+            resolved.
+          </SignalRail>
+          <div className="mt-10">
+            <NetworkGuard />
+          </div>
+        </main>
+      </>
+    );
+  }
+
+  if (!configured || !deployment || !live) {
     return (
       <>
         <AppHeader vaults={[]} active={undefined} onSelect={() => {}} chainId={chainId} simulated={false} />

@@ -22,13 +22,13 @@ ACCOUNT="0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
 command -v anvil >/dev/null || { echo "Foundry not found. https://book.getfoundry.sh"; exit 1; }
 
 echo
-echo "[1/5] starting anvil (chain 46630)"
+echo "[1/5] starting anvil (chain 31337 — a devnet, never a real chain id)"
 # Reuse a devnet that is already up rather than killing processes by pattern —
 # a broad pkill is a good way to take down something the user cared about.
 if cast chain-id --rpc-url "$RPC" >/dev/null 2>&1; then
   echo "      a node is already listening on 8545 — reusing it"
 else
-  anvil --chain-id 46630 --block-time 1 --silent &
+  anvil --chain-id 31337 --block-time 1 --silent &
   for _ in $(seq 1 20); do
     cast chain-id --rpc-url "$RPC" >/dev/null 2>&1 && break
     sleep 0.5
@@ -40,8 +40,8 @@ echo "[2/5] deploying contracts + simulated market"
 ( cd "$ROOT/contracts" && forge script script/DeploySimulated.s.sol:DeploySimulated \
     --rpc-url "$RPC" --broadcast --private-key "$DEPLOYER" >/dev/null )
 
-QUOTE=$(python3 -c "import json;print(json.load(open('$ROOT/contracts/deployments/46630.json'))['quote'])")
-REGISTRY=$(python3 -c "import json;print(json.load(open('$ROOT/contracts/deployments/46630.json'))['registry'])")
+QUOTE=$(python3 -c "import json;print(json.load(open('$ROOT/contracts/deployments/31337.json'))['quote'])")
+REGISTRY=$(python3 -c "import json;print(json.load(open('$ROOT/contracts/deployments/31337.json'))['registry'])")
 echo "      registry $REGISTRY"
 echo "      quote    $QUOTE"
 
@@ -52,7 +52,7 @@ cast send "$QUOTE" "mint(address,uint256)" "$ACCOUNT" 100000000000 \
 echo "[4/5] pointing the frontend at the devnet"
 cat > "$ROOT/frontend/.env.local" <<ENV
 # Written by scripts/devnet.sh. Local devnet only.
-NEXT_PUBLIC_DEFAULT_CHAIN_ID=46630
+NEXT_PUBLIC_DEFAULT_CHAIN_ID=31337
 NEXT_PUBLIC_ROBINHOOD_TESTNET_RPC_URL=$RPC
 ENV
 
@@ -60,7 +60,7 @@ echo "[5/5] starting the app"
 cd "$ROOT/frontend"
 [ -d node_modules ] || pnpm install
 echo
-echo "  Import this key into your wallet, add network 46630 at $RPC"
+echo "  Import this key into your wallet, add network 31337 at $RPC"
 echo "  $DEPLOYER"
 echo
 echo "  http://localhost:3000/app"

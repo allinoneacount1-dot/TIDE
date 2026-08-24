@@ -18,8 +18,39 @@ const IMMUTABLE = { staleTime: Infinity, gcTime: Infinity } as const;
 
 export function useTideChain() {
   const chainId = useChainId();
+  const client = usePublicClient({ chainId });
   const deployment = useMemo(() => getDeployment(chainId), [chainId]);
-  return { chainId, deployment, configured: Boolean(deployment) };
+
+  // An address in the book is a claim, not a fact. Verify the registry actually
+  // has bytecode on this chain before letting the app behave as if it does.
+  //
+  // This is not hypothetical: a devnet address book once shipped under a real
+  // chain id, and the app offered a Create Vault button whose call came back as
+  // `0x` — an unreadable viem error where the honest answer was "nothing is
+  // deployed here". A configured address that holds no code is not a deployment.
+  const { data: code, isLoading: codeLoading } = useQuery({
+    queryKey: ["registry-code", chainId, deployment?.registry],
+    enabled: Boolean(client && deployment?.registry),
+    queryFn: async () => (await client!.getCode({ address: deployment!.registry })) ?? "0x",
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: 1,
+  });
+
+  const deployed = code !== undefined ? code !== "0x" && code.length > 2 : undefined;
+
+  return {
+    chainId,
+    deployment,
+    /** Addresses exist for this chain. */
+    configured: Boolean(deployment),
+    /** Addresses exist *and* the registry has code on this chain. */
+    live: Boolean(deployment) && deployed === true,
+    /** The bytecode check has not answered yet. */
+    verifying: Boolean(deployment) && codeLoading,
+    /** Addresses are configured but nothing is deployed at them. */
+    phantom: Boolean(deployment) && deployed === false,
+  };
 }
 
 /* ────────────────────────────────────────────────────────────────────────── */
