@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useScene, SplitLines, D, E, STAGGER } from "@/components/motion";
-import { CycleDiagram } from "@/components/tide/CycleDiagram";
+import { CapitalFlow } from "@/components/tide/CapitalFlow";
 import { Button } from "@/components/primitives/Button";
 import { PROTOCOL } from "@/lib/config";
 import { formatBps } from "@/lib/format";
@@ -88,7 +88,7 @@ export function Hero() {
             Recurring execution protocol · Robinhood Chain
           </p>
           <p data-hero-eyebrow className="t-eyebrow text-dim" data-tide-reveal>
-            Non-custodial · No token · Open source
+            Non-custodial · Open source · Audited: not yet
           </p>
         </div>
 
@@ -140,11 +140,11 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Full-bleed signature. The channel is wider than the reading column on
-          purpose: it is the product's spine, not a figure inside an article. */}
+      {/* Full-bleed signature. The trajectory is wider than the reading column
+          on purpose: it is the product's spine, not a figure inside an article. */}
       <div data-hero-channel className="mt-12 md:mt-16" data-tide-reveal>
         <div className="shell">
-          <CycleDiagram />
+          <CapitalFlow />
         </div>
       </div>
 
@@ -155,8 +155,8 @@ export function Hero() {
             {formatBps(PROTOCOL.maxFeeBps)}
           </Fact>
           <Fact term="Price guard" detail="Every execution clears an on-chain floor, or it reverts." />
-          <Fact term="Protocol token" detail="There isn't one. Nothing to buy, nothing to farm.">
-            None
+          <Fact term="Withdrawal" detail="Never gated. Not by a pause, not by a halt, not by a dead oracle.">
+            Always
           </Fact>
         </dl>
       </div>

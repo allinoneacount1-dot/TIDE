@@ -72,3 +72,63 @@ test("the hero headline is not clipped by its reveal mask", async ({ page }) => 
   );
   expect(clipped).toBe(0);
 });
+
+/**
+ * The signature visual ships in two orientations. Exactly one may be present at
+ * a given width — rendering both would double the labels for a screen reader
+ * and put a 1600-unit viewBox on a phone, where the mono type lands at two or
+ * three pixels: present, unreadable, and worse than absent.
+ */
+test("the capital flow shows one orientation per breakpoint", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "asserts both widths itself");
+
+  await page.goto("/");
+  await page.waitForTimeout(1500);
+
+  const flow = page.locator("[data-hero-channel] svg");
+  await expect(flow).toHaveCount(2);
+
+  const wideVisible = async () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll("[data-hero-channel] svg")].filter(
+        (el) => (el as SVGElement).getBoundingClientRect().width > 0
+      ).length
+    );
+
+  expect(await wideVisible()).toBe(1);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(500);
+  expect(await wideVisible()).toBe(1);
+});
+
+test("no capital-flow label sits on the trajectory", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "desktop geometry");
+
+  await page.goto("/");
+  await page.waitForTimeout(1500);
+
+  // The label rails exist so this can never happen at any width. If a future
+  // edit moves a label back onto the curve, this catches it.
+  const collisions = await page.evaluate(() => {
+    const svg = document.querySelector("[data-hero-channel] svg:not(.md\\:hidden)") as SVGSVGElement | null;
+    if (!svg) return -1;
+    const path = svg.querySelector("path[d^='M 110 300']") as SVGPathElement | null;
+    if (!path) return -1;
+    const total = path.getTotalLength();
+    const points = Array.from({ length: 200 }, (_, i) => path.getPointAtLength((total * i) / 199));
+    let hits = 0;
+    for (const text of Array.from(svg.querySelectorAll("text"))) {
+      const box = (text as SVGGraphicsElement).getBBox();
+      for (const p of points) {
+        if (p.x >= box.x && p.x <= box.x + box.width && p.y >= box.y && p.y <= box.y + box.height) {
+          hits++;
+          break;
+        }
+      }
+    }
+    return hits;
+  });
+
+  expect(collisions).toBe(0);
+});

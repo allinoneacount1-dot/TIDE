@@ -87,7 +87,7 @@ export function SiteFooter() {
 
         <div className="mt-10 flex flex-col gap-3 border-t border-hairline pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-dim">
-            TIDE · Non-custodial · No protocol token
+            TIDE · Non-custodial · Open source
           </p>
           <p className="max-w-[62ch] text-[11px] leading-[1.5] text-dim">
             Nothing here is investment advice. Tokenized equities carry market risk and smart
